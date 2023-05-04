@@ -56,6 +56,6 @@ func (p *parser) parseStream(jsonStream io.Reader, ports chan<- domain.Port, err
 }
 
 func (p *parser) handleError(err error, errs chan<- error) {
-	log.Fatal(err)
+	log.Printf("[ERROR] " + err.Error())
 	errs <- err
 }
