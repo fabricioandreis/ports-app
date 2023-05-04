@@ -1,10 +1,12 @@
 package storing
 
 import (
+	"context"
 	"fmt"
 	"io"
 	"strings"
 	"testing"
+	"time"
 
 	"github.com/fabricioandreis/ports-app/internal/domain"
 	"github.com/google/go-cmp/cmp"
@@ -46,7 +48,7 @@ func TestParser(t *testing.T) {
 			`{"BRPNG":{"name":"Paranagua","coordinates":[-48.5,-25.52],"city":"Paranaguá","province":"Paraná","country":"Brazil","alias":["br_par_01", "br_par_001"],"regions":["America", "Latin America"],"timezone":"America/Sao_Paulo","unlocs":["BRPNG"],"code":"35159"}, "BRITQ":{"name":"Itaqui","city":"Itaqui","province":"RioGrandedoSul","country":"Brazil","alias":[],"regions":[],"coordinates":[-56.5481122,-29.1294007],"timezone":"America/Sao_Paulo","unlocs":["BRITQ"],"code":"35135"}}`)
 		output := []domain.Port{portParanagua, portItaqui}
 
-		res, err := parseStream(input)
+		res, err := parseStream(context.Background(), input)
 
 		assert.NoError(t, err)
 		assert.Len(t, res, len(output))
@@ -77,7 +79,7 @@ func TestParser(t *testing.T) {
 
 		for i, data := range tests {
 			t.Run(fmt.Sprintf("Test #%v", i+1), func(t *testing.T) {
-				res, err := parseStream(data.input)
+				res, err := parseStream(context.Background(), data.input)
 
 				assert.Len(t, res, len(data.output))
 				if !cmp.Equal(data.output, res) {
@@ -87,14 +89,34 @@ func TestParser(t *testing.T) {
 			})
 		}
 	})
+
+	t.Run("Should gracefully stop processing when context is cancelled", func(t *testing.T) {
+		input := &blockingIOReader{}
+		ctx, cancel := context.WithCancel(context.Background())
+
+		chPorts := make(chan []domain.Port)
+		chErrs := make(chan error)
+
+		go func() {
+			res, err := parseStream(ctx, input)
+			chPorts <- res
+			chErrs <- err
+		}()
+		time.Sleep(time.Second) // waits some time for the go routine above to start
+		cancel()
+
+		assert.Len(t, <-chPorts, 0)
+		assert.ErrorIs(t, <-chErrs, context.Canceled)
+	})
+
 }
 
-func parseStream(jsonStream io.Reader) ([]domain.Port, error) {
+func parseStream(ctx context.Context, jsonStream io.Reader) ([]domain.Port, error) {
 	p := newParser()
 	ports := make(chan domain.Port)
 	errs := make(chan error)
 
-	go p.parseStream(jsonStream, ports, errs)
+	go p.parseStream(ctx, jsonStream, ports, errs)
 	res := []domain.Port{}
 	var err error
 loop:
@@ -109,4 +131,12 @@ loop:
 		}
 	}
 	return res, err
+}
+
+type blockingIOReader struct{}
+
+func (r *blockingIOReader) Read(p []byte) (n int, err error) {
+	ch := make(chan bool)
+	<-ch // blocks forever
+	return 0, nil
 }

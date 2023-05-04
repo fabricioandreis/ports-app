@@ -1,6 +1,7 @@
 package storing
 
 import (
+	"context"
 	"encoding/json"
 	"errors"
 	"io"
@@ -16,18 +17,28 @@ func newParser() *parser {
 	return &parser{}
 }
 
-func (p *parser) parseStream(jsonStream io.Reader, ports chan<- domain.Port, errs chan<- error) {
+func (p *parser) parseStream(ctx context.Context, jsonStream io.Reader, ports chan<- domain.Port, errs chan<- error) {
 	defer close(ports)
 	defer close(errs)
 
+	done := make(chan bool)
+	go func() {
+		select {
+		case <-ctx.Done():
+			p.handleError(ctx.Err(), errs)
+			return
+		case <-done:
+		}
+	}()
+
 	dec := json.NewDecoder(jsonStream)
-	_, err := dec.Token() // Consume opening curly braces
+	_, err := dec.Token() // consume opening curly braces
 	if err != nil {
 		p.handleError(err, errs)
 		return
 	}
 	for dec.More() {
-		// Port ID is a different token on each item, therefore we just consume it as a string token
+		// port ID is a different token on each item, therefore we just consume it as a string token
 		tokenID, err := dec.Token()
 		if err != nil {
 			p.handleError(err, errs)
@@ -40,7 +51,7 @@ func (p *parser) parseStream(jsonStream io.Reader, ports chan<- domain.Port, err
 		}
 		port := domain.Port{ID: id}
 
-		// Consume remaining part of the item and unmarshal it into Port entity
+		// consume remaining part of the item and unmarshal it into Port entity
 		err = dec.Decode(&port)
 		if err != nil {
 			p.handleError(err, errs)
@@ -48,11 +59,12 @@ func (p *parser) parseStream(jsonStream io.Reader, ports chan<- domain.Port, err
 		}
 		ports <- port
 	}
-	_, err = dec.Token() // Consume closing curly braces
+	_, err = dec.Token() // consume closing curly braces
 	if err != nil {
 		p.handleError(err, errs)
 		return
 	}
+	done <- true // finishes go routine that checks for either completion or context cancellation
 }
 
 func (p *parser) handleError(err error, errs chan<- error) {
