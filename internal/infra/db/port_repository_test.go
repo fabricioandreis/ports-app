@@ -10,6 +10,7 @@ import (
 	"github.com/fabricioandreis/ports-app/internal/infra/db"
 	"github.com/fabricioandreis/ports-app/internal/infra/db/stub"
 	"github.com/google/go-cmp/cmp"
+	"github.com/google/go-cmp/cmp/cmpopts"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -55,7 +56,7 @@ func TestPortRepository(t *testing.T) {
 			assert.NoError(t, err1)
 			assert.NoError(t, err2)
 			require.NotNil(t, found)
-			if !cmp.Equal(portRioGrande, *found) {
+			if !cmp.Equal(portRioGrande, *found, cmpopts.EquateEmpty()) {
 				assert.Fail(t, fmt.Sprintf("port not as expected: %s", cmp.Diff(portRioGrande, *found)))
 			}
 		})

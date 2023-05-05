@@ -2,12 +2,13 @@ package db
 
 import (
 	"context"
-	"encoding/json"
 	"time"
 
 	"github.com/fabricioandreis/ports-app/internal/contracts/repository"
 	"github.com/fabricioandreis/ports-app/internal/domain"
+	"github.com/fabricioandreis/ports-app/internal/infra/db/proto"
 	redis "github.com/redis/go-redis/v9"
+	protobuf "google.golang.org/protobuf/proto"
 )
 
 type PortRepository struct {
@@ -28,24 +29,62 @@ func NewPortRepository(address, password string) repository.Port {
 }
 
 func (repo *PortRepository) Get(ctx context.Context, portID string) (*domain.Port, error) {
-	bytes, err := repo.client.Get(ctx, portID).Bytes()
+	dbModel, err := repo.client.Get(ctx, portID).Bytes()
 	if err != nil {
 		return nil, err
 	}
 
-	var port domain.Port
-	err = json.Unmarshal(bytes, &port)
+	port, err := repo.dbModelToEntity(dbModel)
 	if err != nil {
 		return nil, err
 	}
 
-	return &port, nil
+	return port, nil
 }
 func (repo *PortRepository) Put(ctx context.Context, port domain.Port) error {
-	bytes, err := json.Marshal(port)
+	dbModel, err := repo.entityToDBModel(port)
 	if err != nil {
 		return err
 	}
-	repo.client.Set(ctx, port.ID, bytes, 0)
+	repo.client.Set(ctx, port.ID, dbModel, 0)
 	return nil
+}
+
+func (repo *PortRepository) entityToDBModel(port domain.Port) ([]byte, error) {
+	message := &proto.Port{
+		ID:          port.ID,
+		Code:        port.Code,
+		Name:        port.Name,
+		City:        port.City,
+		Province:    port.Province,
+		Country:     port.Country,
+		Timezone:    port.Timezone,
+		Alias:       port.Alias,
+		Coordinates: port.Coordinates,
+		Regions:     port.Regions,
+		Unlocs:      port.Unlocs,
+	}
+	return protobuf.Marshal(message)
+}
+
+func (repo *PortRepository) dbModelToEntity(dbModel []byte) (*domain.Port, error) {
+	port := proto.Port{}
+	err := protobuf.Unmarshal(dbModel, &port)
+	if err != nil {
+		return nil, err
+	}
+
+	return &domain.Port{
+		ID:          port.ID,
+		Code:        port.Code,
+		Name:        port.Name,
+		City:        port.City,
+		Province:    port.Province,
+		Country:     port.Country,
+		Timezone:    port.Timezone,
+		Alias:       port.Alias,
+		Coordinates: port.Coordinates,
+		Regions:     port.Regions,
+		Unlocs:      port.Unlocs,
+	}, nil
 }

@@ -12,3 +12,7 @@ clean:
 
 test:
 	go test -cover ./... -race
+
+
+proto:
+	protoc --go_opt=paths=source_relative --proto_path=./internal/infra/db/proto --go_out=./internal/infra/db/proto ./internal/infra/db/proto/port.proto

@@ -5,8 +5,8 @@ type Port struct {
 	Code        string
 	Name        string
 	City        string
-	Country     string
 	Province    string
+	Country     string
 	Timezone    string
 	Alias       []string
 	Coordinates []float32

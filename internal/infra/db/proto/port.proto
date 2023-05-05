@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+option go_package = "github.com/fabricioandreis/ports-app/internal/infra/db/proto";
+
+message Port {
+	string ID                  = 1;
+	string Code                = 2;
+	string Name                = 3;
+	string City                = 4;
+	string Province            = 5;
+	string Country             = 6;
+	string Timezone            = 7;
+	repeated string Alias      = 8;
+	repeated float Coordinates = 9;
+	repeated string Regions    = 10;
+	repeated string Unlocs     = 11;
+}
