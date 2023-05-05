@@ -30,17 +30,23 @@ jobs:
     - name: Test Coverage
       run: make test-coverage
 
-    - name: Upload unit test results
+    - name: Archive unit test results
       uses: actions/upload-artifact@v3
       with:
         name: unit-test-results
         path: unit-test-results.json
 
-    - name: Upload unit test coverage
+    - name: Archive unit test coverage
       uses: actions/upload-artifact@v3
       with:
         name: unit-test-coverage
         path: unit-test-coverage.html
+
+    - name: Archive release candidate
+      uses: actions/upload-artifact@v3
+      with:
+        name: release-candidate-binary
+        path: ports-app
 
     - name: Run Acceptance Tests
       run: make acceptance-tests
