@@ -19,6 +19,7 @@ func newParser() *parser {
 	return &parser{}
 }
 
+// parseStream parses an input JSON stream of a known file format for ports
 func (p *parser) parseStream(ctx context.Context, jsonStream io.Reader, ports chan<- domain.Port, errs chan<- error) {
 	defer close(ports)
 	defer close(errs)
