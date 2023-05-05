@@ -5,6 +5,8 @@ import (
 	"errors"
 	"log"
 	"os"
+	"os/signal"
+	"syscall"
 
 	"github.com/fabricioandreis/ports-app/internal/infra/config"
 	"github.com/fabricioandreis/ports-app/internal/infra/db"
@@ -13,8 +15,27 @@ import (
 
 func main() {
 	log.Println("Running Ports service")
+	done := make(chan bool)
+
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
 
 	config := config.Load()
+	redis := db.NewClient(config.RedisAddress, config.RedisPassword)
+
+	go gracefullyShutdown(cancel, redis, done)
+
+	run(ctx, config, redis, done)
+
+	<-done
+	log.Println("Shutting down Ports service")
+}
+
+func run(ctx context.Context, config config.Config, dbClient db.Client, done chan<- bool) {
+	defer func() {
+		done <- true
+	}()
+
 	inputFile, err := os.Open(config.InputJSONFilePath)
 	if err != nil {
 		err = errors.Join(errors.New("unable to open file"), err)
@@ -22,14 +43,28 @@ func main() {
 		return
 	}
 
-	log.Println("Storing data from input file into database")
-
-	repoPort := db.NewPortRepository(config.RedisAddress, config.RedisPassword)
+	repoPort := db.NewPortRepository(dbClient)
 	storeUsecase := store.NewStoreUsecase(repoPort)
-	count, err := storeUsecase.Store(context.Background(), inputFile)
+	count, err := storeUsecase.Store(ctx, inputFile)
+	log.Printf("Finished store use case after storing %v ports\n", count)
 	if err != nil {
-		log.Fatalf(errors.Join(errors.New("unable to process store Ports use case"), err).Error())
+		log.Printf("Did not process all items in the input JSON file due to error: %s\n", err.Error())
 	}
+}
 
-	log.Printf("Finished storing %v ports\n", count)
+func gracefullyShutdown(cancel context.CancelFunc, dbClient db.Client, done chan bool) {
+	trap := make(chan os.Signal, 1)
+	signal.Notify(trap, syscall.SIGTERM, syscall.SIGINT, syscall.SIGQUIT)
+
+	select {
+	case <-trap:
+		log.Println("Received OS signal to terminate process. Cancelling context...")
+		cancel()
+		<-done
+	case <-done:
+	}
+	log.Println("Gracefully shutting down application")
+
+	dbClient.Close()
+	done <- true
 }

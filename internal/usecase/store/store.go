@@ -17,26 +17,27 @@ func NewStoreUsecase(repoPort repository.Port) *StoreUsecase {
 }
 
 func (usc *StoreUsecase) Store(ctx context.Context, jsonStream io.Reader) (int, error) {
+	log.Println("Storing data from input JSON stream into database")
+
 	parser := newParser(jsonStream)
 	results := make(chan result)
-	go parser.parseStream(ctx, results)
+	go parser.parse(ctx, results)
 
 	count := 0
 	for {
 		select {
 		case res, ok := <-results:
-			if !ok {
-				log.Println("Store use case finished")
+			if !ok || res.err != nil {
 				return count, res.err
 			}
 			usc.repoPort.Put(ctx, res.port)
 			count++
 		case <-ctx.Done():
 			// Busy wait after context is Done until parser.parseStream closes its channels
-			log.Println("Busy waiting for parseStream to close its channels")
+			log.Println("Busy waiting for parser to finish processing...")
 			_, resultsOpen := <-results
 			if !resultsOpen {
-				log.Println("parseStream closed its channels, returning")
+				log.Println("Parser finished processing, finishing store use case...")
 				return count, ctx.Err()
 			}
 		}

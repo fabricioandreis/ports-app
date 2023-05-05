@@ -3,36 +3,19 @@ package db
 import (
 	"context"
 	"log"
-	"time"
 
 	"github.com/fabricioandreis/ports-app/internal/contracts/repository"
 	"github.com/fabricioandreis/ports-app/internal/domain"
 	"github.com/fabricioandreis/ports-app/internal/infra/db/proto"
-	redis "github.com/redis/go-redis/v9"
 	protobuf "google.golang.org/protobuf/proto"
 )
 
 type PortRepository struct {
-	client redis.Client
+	client Client
 }
 
-func NewPortRepository(address, password string) repository.Port {
-	repo := &PortRepository{
-		client: *redis.NewClient(&redis.Options{
-			Addr:         address,
-			Password:     password,
-			DB:           0,
-			DialTimeout:  200 * time.Millisecond,
-			ReadTimeout:  200 * time.Millisecond,
-			WriteTimeout: 200 * time.Millisecond,
-		})}
-
-	if err := repo.client.Ping(context.Background()).Err(); err != nil {
-		log.Fatalln("unable to connect to Redis database at " + address)
-	}
-
-	log.Println("Connected to Redis database")
-	return repo
+func NewPortRepository(client Client) repository.Port {
+	return &PortRepository{client}
 }
 
 func (repo *PortRepository) Get(ctx context.Context, portID string) (*domain.Port, error) {

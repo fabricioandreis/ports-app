@@ -39,8 +39,8 @@ func TestPortRepository(t *testing.T) {
 			enabled: true,
 		},
 		{
-			repo:    db.NewPortRepository("localhost:6379", ""),
-			enabled: false,
+			repo:    db.NewPortRepository(db.NewClient("localhost:6379", "")),
+			enabled: true,
 		},
 	}
 

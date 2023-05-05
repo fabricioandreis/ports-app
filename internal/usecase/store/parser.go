@@ -25,14 +25,14 @@ func newParser(jsonStream io.Reader) *parser {
 	return &parser{jsonStream}
 }
 
-// parseStream produces Ports from an input stream into an output channel.
+// parse produces Ports from an input stream into an output channel.
 // If an error occurs when trying to unmarshal the JSON stream, an error is sent to another output channel.
 // The method handles context cancellation by writing an error right away into the output channel.
-func (p *parser) parseStream(ctx context.Context, results chan<- result) {
+func (p *parser) parse(ctx context.Context, results chan<- result) {
 	defer func() {
-		log.Println("Closing parseStream channels")
+		log.Println("Closing parser channels")
 		close(results)
-		log.Println("Closed parseStream channels")
+		log.Println("Closed parser channels")
 	}()
 
 	iterator := newJsonIterator(p.jsonStream)
@@ -41,8 +41,8 @@ func (p *parser) parseStream(ctx context.Context, results chan<- result) {
 
 		select {
 		case <-ctx.Done():
-			log.Println("Context cancelled, finishing parseStream")
 			p.handleError(ctx.Err(), results)
+			log.Println("Context cancelled, finishing parser...")
 			return
 		default:
 			if err != nil {
@@ -60,7 +60,7 @@ func (p *parser) parseStream(ctx context.Context, results chan<- result) {
 }
 
 func (p *parser) handleError(err error, results chan<- result) {
-	err = errors.Join(errors.New("unable to parse input JSON stream"), err)
+	err = errors.Join(errors.New("error when parsing input JSON stream"), err)
 	log.Println(err.Error())
 	results <- result{err: err}
 }

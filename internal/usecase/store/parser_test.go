@@ -150,7 +150,7 @@ func parseStream(ctx context.Context, jsonStream io.Reader) ([]domain.Port, erro
 	p := newParser(jsonStream)
 	results := make(chan result)
 
-	go p.parseStream(ctx, results)
+	go p.parse(ctx, results)
 	ports := []domain.Port{}
 	for res := range results {
 		if res.err != nil {
