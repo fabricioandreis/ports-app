@@ -1,4 +1,4 @@
-package storing
+package store
 
 import (
 	"context"
@@ -19,8 +19,8 @@ var (
 		Code:        "35159",
 		Name:        "Paranagua",
 		City:        "Paranaguá",
-		Country:     "Brazil",
 		Province:    "Paraná",
+		Country:     "Brazil",
 		Timezone:    "America/Sao_Paulo",
 		Alias:       []string{"br_par_01", "br_par_001"},
 		Coordinates: []float32{-48.5, -25.52},
@@ -32,8 +32,8 @@ var (
 		Code:        "35135",
 		Name:        "Itaqui",
 		City:        "Itaqui",
-		Country:     "Brazil",
 		Province:    "RioGrandedoSul",
+		Country:     "Brazil",
 		Timezone:    "America/Sao_Paulo",
 		Alias:       []string{},
 		Coordinates: []float32{-56.5481122, -29.1294007},

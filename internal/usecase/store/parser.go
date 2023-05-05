@@ -1,4 +1,4 @@
-package storing
+package store
 
 import (
 	"context"
@@ -23,7 +23,6 @@ func newParser() *parser {
 // Ports are sent to an output channel.
 // If an error occurs when trying to unmarshal the JSON stream, an error is sent to another output channel.
 // The method handles context cancellation by writing an error right away into the output channel.
-// It
 func (p *parser) parseStream(ctx context.Context, jsonStream io.Reader, ports chan<- domain.Port, errs chan<- error) {
 	defer close(ports)
 	defer close(errs)
