@@ -3,8 +3,10 @@ BINARY_NAME=ports-app
 run:
 	go run -ldflags="-s -w" cmd/main.go
 
+vet:
+	go vet ./...
+
 build:
-	go vet cmd/main.go
 	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o ${BINARY_NAME} -ldflags="-s -w" cmd/main.go
 
 clean:
@@ -12,7 +14,6 @@ clean:
 
 test:
 	go test -cover ./... -race
-
 
 proto:
 	protoc --go_opt=paths=source_relative --proto_path=./internal/infra/db/proto --go_out=./internal/infra/db/proto ./internal/infra/db/proto/port.proto
