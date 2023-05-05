@@ -44,16 +44,32 @@ var (
 
 func TestParser(t *testing.T) {
 	t.Run("Should be able to parse a simple JSON input stream containing ports in a known format", func(t *testing.T) {
-		input := strings.NewReader(
-			`{"BRPNG":{"name":"Paranagua","coordinates":[-48.5,-25.52],"city":"Paranaguá","province":"Paraná","country":"Brazil","alias":["br_par_01", "br_par_001"],"regions":["America", "Latin America"],"timezone":"America/Sao_Paulo","unlocs":["BRPNG"],"code":"35159"}, "BRITQ":{"name":"Itaqui","city":"Itaqui","province":"RioGrandedoSul","country":"Brazil","alias":[],"regions":[],"coordinates":[-56.5481122,-29.1294007],"timezone":"America/Sao_Paulo","unlocs":["BRITQ"],"code":"35135"}}`)
-		output := []domain.Port{portParanagua, portItaqui}
+		tests := []struct {
+			input  io.Reader
+			output []domain.Port
+		}{
+			{
+				input: strings.NewReader(
+					`{"BRPNG":{"name":"Paranagua","coordinates":[-48.5,-25.52],"city":"Paranaguá","province":"Paraná","country":"Brazil","alias":["br_par_01", "br_par_001"],"regions":["America", "Latin America"],"timezone":"America/Sao_Paulo","unlocs":["BRPNG"],"code":"35159"}, "BRITQ":{"name":"Itaqui","city":"Itaqui","province":"RioGrandedoSul","country":"Brazil","alias":[],"regions":[],"coordinates":[-56.5481122,-29.1294007],"timezone":"America/Sao_Paulo","unlocs":["BRITQ"],"code":"35135"}}`),
+				output: []domain.Port{portParanagua, portItaqui},
+			},
+			{
+				input:  strings.NewReader(`{}`),
+				output: []domain.Port{},
+			},
+		}
 
-		res, err := parseStream(context.Background(), input)
+		for i, data := range tests {
+			t.Run(fmt.Sprintf("Test #%v", i+1), func(t *testing.T) {
 
-		assert.NoError(t, err)
-		assert.Len(t, res, len(output))
-		if !cmp.Equal(output, res) {
-			assert.Fail(t, fmt.Sprintf("Ports are not as expected: %s", cmp.Diff(output, res)))
+				res, err := parseStream(context.Background(), data.input)
+
+				assert.NoError(t, err)
+				assert.Len(t, res, len(data.output))
+				if !cmp.Equal(data.output, res) {
+					assert.Fail(t, fmt.Sprintf("Ports are not as expected: %s", cmp.Diff(data.output, res)))
+				}
+			})
 		}
 	})
 
@@ -106,7 +122,9 @@ func TestParser(t *testing.T) {
 			})
 		}
 	})
+}
 
+func TestStopProcessing(t *testing.T) {
 	t.Run("Should gracefully stop processing when context is cancelled", func(t *testing.T) {
 		input := &blockingIOReader{}
 		ctx, cancel := context.WithCancel(context.Background())
@@ -129,23 +147,18 @@ func TestParser(t *testing.T) {
 }
 
 func parseStream(ctx context.Context, jsonStream io.Reader) ([]domain.Port, error) {
-	p := newParser()
-	ports := make(chan domain.Port)
-	errs := make(chan error)
+	p := newParser(jsonStream)
+	results := make(chan result)
 
-	go p.parseStream(ctx, jsonStream, ports, errs)
-	res := []domain.Port{}
-	for {
-		select {
-		case p, ok := <-ports:
-			if !ok {
-				return res, nil
-			}
-			res = append(res, p)
-		case err := <-errs:
-			return res, err
+	go p.parseStream(ctx, results)
+	ports := []domain.Port{}
+	for res := range results {
+		if res.err != nil {
+			return ports, res.err
 		}
+		ports = append(ports, res.port)
 	}
+	return ports, nil
 }
 
 type blockingIOReader struct{}

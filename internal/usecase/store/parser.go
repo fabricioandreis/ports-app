@@ -2,7 +2,6 @@ package store
 
 import (
 	"context"
-	"encoding/json"
 	"errors"
 	"io"
 	"log"
@@ -12,99 +11,56 @@ import (
 
 var ErrCastTokenIDString = errors.New("unable to cast token ID to string")
 
+// A parser parses an input JSON stream of a known file format for Ports.
 type parser struct {
+	jsonStream io.Reader
 }
 
-func newParser() *parser {
-	return &parser{}
+type result struct {
+	port domain.Port
+	err  error
 }
 
-// parseStream parses an input JSON stream of a known file format for ports.
-// Ports are sent to an output channel.
+func newParser(jsonStream io.Reader) *parser {
+	return &parser{jsonStream}
+}
+
+// parseStream produces Ports from an input stream into an output channel.
 // If an error occurs when trying to unmarshal the JSON stream, an error is sent to another output channel.
 // The method handles context cancellation by writing an error right away into the output channel.
-func (p *parser) parseStream(ctx context.Context, jsonStream io.Reader, ports chan<- domain.Port, errs chan<- error) {
-	defer close(ports)
-	defer close(errs)
-
-	done := make(chan bool)
-	cancelled := make(chan bool)
-	go func() {
-		select {
-		case <-ctx.Done():
-			p.handleError(ctx.Err(), errs)
-			cancelled <- true
-			return
-		case <-done:
-		}
+func (p *parser) parseStream(ctx context.Context, results chan<- result) {
+	defer func() {
+		log.Println("Closing parseStream channels")
+		close(results)
+		log.Println("Closed parseStream channels")
 	}()
 
-	nextPort := newIterator(jsonStream)
+	iterator := newJsonIterator(p.jsonStream)
 	for {
-		port, err := nextPort()
-		if err != nil {
-			p.handleError(err, errs)
-			return
-		}
-		if port == nil {
-			done <- true // finishes go routine that checks for either completion or context cancellation
-			return
-		}
+		port, err := iterator.next(ctx)
+
 		select {
-		case <-cancelled:
+		case <-ctx.Done():
+			log.Println("Context cancelled, finishing parseStream")
+			p.handleError(ctx.Err(), results)
 			return
 		default:
+			if err != nil {
+				p.handleError(err, results)
+				return
+			}
+			if port == nil {
+				log.Println("Parsed input JSON stream")
+				return
+			}
 			log.Println("Read port " + port.ID)
-			ports <- *port
+			results <- result{port: *port}
 		}
 	}
 }
 
-func (p *parser) handleError(err error, errs chan<- error) {
+func (p *parser) handleError(err error, results chan<- result) {
 	err = errors.Join(errors.New("unable to parse input JSON stream"), err)
 	log.Println(err.Error())
-	errs <- err
-}
-
-// newIterator creates an iterator function.
-// The iterator function returns the next port in the input JSON stream.
-// When it finished reading, the iterator function returns nil.
-// If the input JSON stream is not valid, the iterator function returns an error.
-func newIterator(jsonStream io.Reader) func() (*domain.Port, error) {
-	dec := json.NewDecoder(jsonStream)
-	_, err := dec.Token() // read opening curly bracket
-	if err != nil {
-		return func() (*domain.Port, error) {
-			return nil, err
-		}
-	}
-
-	return func() (*domain.Port, error) {
-		if !dec.More() {
-			_, err = dec.Token() // read closing curly bracket
-			if err != nil {
-				return nil, err
-			}
-			return nil, nil
-		}
-
-		// port ID is a different token on each item, therefore we just consume it as a string token
-		tokenID, err := dec.Token()
-		if err != nil {
-			return nil, err
-		}
-		id, ok := tokenID.(string)
-		if !ok {
-			return nil, ErrCastTokenIDString
-		}
-		port := domain.Port{ID: id}
-
-		// read remaining part of the item and unmarshal it into Port entity
-		err = dec.Decode(&port)
-		if err != nil {
-			return nil, err
-		}
-
-		return &port, nil
-	}
+	results <- result{err: err}
 }
