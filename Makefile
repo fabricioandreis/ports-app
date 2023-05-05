@@ -40,5 +40,8 @@ docker-brun: docker-build docker-run
 docker-push: docker-build
 	docker push fabricioandreis/ports-app
 
-acceptance-tests: build
+up: build
 	docker compose up --abort-on-container-exit --exit-code-from app --remove-orphans
+
+acceptance-tests:
+	docker compose up --build --abort-on-container-exit --exit-code-from app --remove-orphans
