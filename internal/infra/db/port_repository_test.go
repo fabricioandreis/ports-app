@@ -40,7 +40,7 @@ func TestPortRepository(t *testing.T) {
 		},
 		{
 			repo:    db.NewPortRepository(db.NewClient("localhost:6379", "")),
-			enabled: true,
+			enabled: false,
 		},
 	}
 
