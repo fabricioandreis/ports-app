@@ -11,7 +11,7 @@ on:
 
 jobs:
 
-  build:
+  continuous-delivery:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
@@ -41,3 +41,7 @@ jobs:
       with:
         name: unit-test-coverage
         path: unit-test-coverage.html
+
+    - name: Run Acceptance Tests
+      run: make acceptance-tests
+    

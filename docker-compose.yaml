@@ -1,7 +1,7 @@
 version: '3.8'
 services:
 
-  portsapp:
+  app:
     image: fabricioandreis/ports-app:latest
     environment:
       - PORTS_INPUT_JSON_PATH=/data/ports.json

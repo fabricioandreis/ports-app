@@ -39,4 +39,7 @@ docker-push: docker-build
 	docker push fabricioandreis/ports-app
 
 up: docker-build
-	docker compose up
+	docker compose up --abort-on-container-exit --exit-code-from app --remove-orphans
+
+acceptance-tests:
+	docker compose up --abort-on-container-exit --exit-code-from app --remove-orphans
