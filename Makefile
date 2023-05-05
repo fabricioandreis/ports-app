@@ -18,10 +18,13 @@ proto:
 	protoc --go_opt=paths=source_relative --proto_path=./internal/infra/db/proto --go_out=./internal/infra/db/proto ./internal/infra/db/proto/port.proto
 
 docker-build: build
-	docker build -t fabricioandreis/ports-app .
+	docker build -t fabricioandreis/ports-app:latest .
 
 docker-run:
 	docker run --detach fabricioandreis/ports-app
 
 docker-push: docker-build
 	docker push fabricioandreis/ports-app
+
+up: docker-build
+	docker compose up

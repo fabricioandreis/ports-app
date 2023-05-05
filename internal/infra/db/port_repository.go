@@ -2,6 +2,7 @@ package db
 
 import (
 	"context"
+	"log"
 	"time"
 
 	"github.com/fabricioandreis/ports-app/internal/contracts/repository"
@@ -16,7 +17,7 @@ type PortRepository struct {
 }
 
 func NewPortRepository(address, password string) repository.Port {
-	return &PortRepository{
+	repo := &PortRepository{
 		client: *redis.NewClient(&redis.Options{
 			Addr:         address,
 			Password:     password,
@@ -24,8 +25,9 @@ func NewPortRepository(address, password string) repository.Port {
 			DialTimeout:  50 * time.Millisecond,
 			ReadTimeout:  50 * time.Millisecond,
 			WriteTimeout: 50 * time.Millisecond,
-		}),
-	}
+		})}
+	log.Println("Connected to Redis database")
+	return repo
 }
 
 func (repo *PortRepository) Get(ctx context.Context, portID string) (*domain.Port, error) {

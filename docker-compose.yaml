@@ -1,0 +1,23 @@
+version: '3.8'
+services:
+
+  portsapp:
+    image: fabricioandreis/ports-app:latest
+    environment:
+      - REDIS_ADDRESS=localhost:6379
+      - REDIS_PASSWORD=
+    depends_on:
+      - redis
+
+  redis:
+    image: redis:7.0-alpine
+    restart: always
+    ports:
+      - 6379:6379
+    command: redis-server --loglevel warning
+    volumes:
+      - redis:/data
+
+volumes:
+  redis:
+    driver: local
