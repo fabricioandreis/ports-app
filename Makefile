@@ -12,7 +12,9 @@ vet:
 build:
 	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o ${BINARY_NAME} -ldflags="-s -w" cmd/main.go
 
-clean:
+clean: clear
+
+clear:
 	rm -f ${BINARY_NAME}
 	rm -rf *coverage*
 	rm -rf *test-results*
@@ -38,8 +40,5 @@ docker-brun: docker-build docker-run
 docker-push: docker-build
 	docker push fabricioandreis/ports-app
 
-up: docker-build
-	docker compose up --abort-on-container-exit --exit-code-from app --remove-orphans
-
-acceptance-tests:
+acceptance-tests: build
 	docker compose up --abort-on-container-exit --exit-code-from app --remove-orphans
