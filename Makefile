@@ -3,6 +3,9 @@ BINARY_NAME=ports-app
 run:
 	go run -ldflags="-s -w" cmd/main.go
 
+dep:
+	go get .
+
 vet:
 	go vet ./...
 
