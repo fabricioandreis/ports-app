@@ -10,6 +10,8 @@ import (
 	"github.com/fabricioandreis/ports-app/internal/domain"
 )
 
+var ErrCastTokenIDString = errors.New("unable to cast token ID to string")
+
 type parser struct {
 }
 
@@ -46,7 +48,7 @@ func (p *parser) parseStream(ctx context.Context, jsonStream io.Reader, ports ch
 		}
 		id, ok := tokenID.(string)
 		if !ok {
-			p.handleError(errors.New("unable to cast token ID to string"), errs)
+			p.handleError(ErrCastTokenIDString, errs)
 			return
 		}
 		port := domain.Port{ID: id}

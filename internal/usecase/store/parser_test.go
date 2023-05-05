@@ -65,6 +65,23 @@ func TestParser(t *testing.T) {
 		}{
 			{
 				input: strings.NewReader(
+					`"BRPNG":{"name":Paranagua","coordinates":[-48.5,-25.52],"city":"Paranaguá","province":"Paraná","country":"Brazil","alias":["br_par_01", "br_par_001"],"regions":["America", "Latin America"],"timezone":"America/Sao_Paulo","unlocs":["BRPNG"],"code":"35159"}}`),
+				output: []domain.Port{},
+				errStr: "invalid character ':' looking for beginning of value",
+			},
+			{
+				input:  strings.NewReader(`a`),
+				output: []domain.Port{},
+				errStr: "invalid character 'a' looking for beginning of value",
+			},
+			{
+				input: strings.NewReader(
+					`[{"BRPNG":{"name":Paranagua","coordinates":[-48.5,-25.52],"city":"Paranaguá","province":"Paraná","country":"Brazil","alias":["br_par_01", "br_par_001"],"regions":["America", "Latin America"],"timezone":"America/Sao_Paulo","unlocs":["BRPNG"],"code":"35159"}}]`),
+				output: []domain.Port{},
+				errStr: ErrCastTokenIDString.Error(),
+			},
+			{
+				input: strings.NewReader(
 					`{"BRPNG":{"name":Paranagua","coordinates":[-48.5,-25.52],"city":"Paranaguá","province":"Paraná","country":"Brazil","alias":["br_par_01", "br_par_001"],"regions":["America", "Latin America"],"timezone":"America/Sao_Paulo","unlocs":["BRPNG"],"code":"35159"}}`),
 				output: []domain.Port{},
 				errStr: "invalid character 'P' looking for beginning of value",
@@ -83,7 +100,7 @@ func TestParser(t *testing.T) {
 
 				assert.Len(t, res, len(data.output))
 				if !cmp.Equal(data.output, res) {
-					assert.Fail(t, fmt.Sprintf("Ports are not as expected: %s", cmp.Diff(data.output, res)))
+					assert.Fail(t, fmt.Sprintf("ports are not as expected: %s", cmp.Diff(data.output, res)))
 				}
 				assert.ErrorContains(t, err, data.errStr)
 			})
