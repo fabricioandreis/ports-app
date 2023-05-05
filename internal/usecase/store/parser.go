@@ -19,16 +19,22 @@ func newParser() *parser {
 	return &parser{}
 }
 
-// parseStream parses an input JSON stream of a known file format for ports
+// parseStream parses an input JSON stream of a known file format for ports.
+// Ports are sent to an output channel.
+// If an error occurs when trying to unmarshal the JSON stream, an error is sent to another output channel.
+// The method handles context cancellation by writing an error right away into the output channel.
+// It
 func (p *parser) parseStream(ctx context.Context, jsonStream io.Reader, ports chan<- domain.Port, errs chan<- error) {
 	defer close(ports)
 	defer close(errs)
 
 	done := make(chan bool)
+	cancelled := make(chan bool)
 	go func() {
 		select {
 		case <-ctx.Done():
 			p.handleError(ctx.Err(), errs)
+			cancelled <- true
 			return
 		case <-done:
 		}
@@ -45,7 +51,12 @@ func (p *parser) parseStream(ctx context.Context, jsonStream io.Reader, ports ch
 			done <- true // finishes go routine that checks for either completion or context cancellation
 			return
 		}
-		ports <- *port
+		select {
+		case <-cancelled:
+			return
+		default:
+			ports <- *port
+		}
 	}
 }
 
