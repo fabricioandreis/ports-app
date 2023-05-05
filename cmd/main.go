@@ -1,7 +1,28 @@
 package main
 
-import "log"
+import (
+	"context"
+	"errors"
+	"log"
+	"os"
+
+	"github.com/fabricioandreis/ports-app/internal/infra/db"
+	"github.com/fabricioandreis/ports-app/internal/usecase/store"
+)
 
 func main() {
 	log.Println("Running Ports service")
+	inputFile, err := os.Open("./ports.json")
+	if err != nil {
+		err = errors.Join(errors.New("unable to open file"), err)
+		log.Fatalf(err.Error())
+		return
+	}
+
+	repoPort := db.NewPortRepository("localhost:6379", "")
+	storeUsecase := store.NewStoreUsecase(repoPort)
+
+	log.Println("Storing data from input file into database")
+	storeUsecase.Store(context.Background(), inputFile)
+	log.Println("Finished storing data")
 }
