@@ -45,7 +45,7 @@ jobs:
     - name: Archive release candidate
       uses: actions/upload-artifact@v3
       with:
-        name: release-candidate-binary
+        name: release-candidate
         path: ports-app
 
   acceptance-tests:
@@ -55,7 +55,7 @@ jobs:
     - name: Download release candidate
       uses: actions/download-artifact@v3
       with:
-        name: ports-app
+        name: release-candidate
 
     - name: Run Acceptance Tests
       run: make acceptance-tests
