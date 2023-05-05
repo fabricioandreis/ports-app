@@ -21,10 +21,9 @@ docker-build: build
 	docker build -t fabricioandreis/ports-app:latest .
 
 docker-run: 
-	docker run --detach --env-file ./local.env --network=host fabricioandreis/ports-app
+	docker run --detach --env-file ./local.env --volume ${PWD}/ports.json:/data/ports.json --network=host fabricioandreis/ports-app:latest
 
-docker-brun: docker-build
-	docker run --detach --env-file ./local.env --network=host fabricioandreis/ports-app
+docker-brun: docker-build docker-run
 
 docker-push: docker-build
 	docker push fabricioandreis/ports-app
