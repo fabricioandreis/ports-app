@@ -6,14 +6,16 @@ import (
 )
 
 type Config struct {
-	RedisAddress  string
-	RedisPassword string
+	RedisAddress      string
+	RedisPassword     string
+	InputJSONFilePath string
 }
 
 func Load() Config {
 	return Config{
-		RedisAddress:  ifEmpty(getEnv("REDIS_ADDRESS"), "localhost:6379"),
-		RedisPassword: getEnv("REDIS_PASSWORD"),
+		RedisAddress:      ifEmpty(getEnv("REDIS_ADDRESS"), "localhost:6379"),
+		RedisPassword:     getEnv("REDIS_PASSWORD"),
+		InputJSONFilePath: ifEmpty(getEnv("PORTS_INPUT_JSON_PATH"), "./ports.json"),
 	}
 }
 

@@ -54,6 +54,7 @@ func (p *parser) parseStream(ctx context.Context, jsonStream io.Reader, ports ch
 		case <-cancelled:
 			return
 		default:
+			log.Println("Read port " + port.ID)
 			ports <- *port
 		}
 	}

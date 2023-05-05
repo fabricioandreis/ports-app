@@ -15,7 +15,7 @@ func main() {
 	log.Println("Running Ports service")
 
 	config := config.Load()
-	inputFile, err := os.Open("./ports.json")
+	inputFile, err := os.Open(config.InputJSONFilePath)
 	if err != nil {
 		err = errors.Join(errors.New("unable to open file"), err)
 		log.Fatalf(err.Error())

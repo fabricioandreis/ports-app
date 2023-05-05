@@ -22,10 +22,15 @@ func NewPortRepository(address, password string) repository.Port {
 			Addr:         address,
 			Password:     password,
 			DB:           0,
-			DialTimeout:  50 * time.Millisecond,
-			ReadTimeout:  50 * time.Millisecond,
-			WriteTimeout: 50 * time.Millisecond,
+			DialTimeout:  200 * time.Millisecond,
+			ReadTimeout:  200 * time.Millisecond,
+			WriteTimeout: 200 * time.Millisecond,
 		})}
+
+	if err := repo.client.Ping(context.Background()).Err(); err != nil {
+		log.Fatalln("unable to connect to Redis database at " + address)
+	}
+
 	log.Println("Connected to Redis database")
 	return repo
 }
@@ -49,6 +54,7 @@ func (repo *PortRepository) Put(ctx context.Context, port domain.Port) error {
 		return err
 	}
 	repo.client.Set(ctx, port.ID, dbModel, 0)
+	log.Println("Saved port " + port.ID)
 	return nil
 }
 
