@@ -8,7 +8,7 @@ import (
 	"github.com/fabricioandreis/ports-app/internal/domain"
 )
 
-// An jsonIterator returns the next port in the input JSON stream.
+// A jsonIterator returns the next port in the input JSON stream.
 // When it finished reading, it returns nil.
 // If the input JSON stream is not valid, it returns an error.
 type jsonIterator struct {
