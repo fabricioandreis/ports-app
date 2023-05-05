@@ -33,43 +33,65 @@ func (p *parser) parseStream(ctx context.Context, jsonStream io.Reader, ports ch
 		}
 	}()
 
-	dec := json.NewDecoder(jsonStream)
-	_, err := dec.Token() // consume opening curly braces
-	if err != nil {
-		p.handleError(err, errs)
-		return
-	}
-	for dec.More() {
-		// port ID is a different token on each item, therefore we just consume it as a string token
-		tokenID, err := dec.Token()
+	nextPort := newIterator(jsonStream)
+	for {
+		port, err := nextPort()
 		if err != nil {
 			p.handleError(err, errs)
 			return
 		}
-		id, ok := tokenID.(string)
-		if !ok {
-			p.handleError(ErrCastTokenIDString, errs)
+		if port == nil {
+			done <- true // finishes go routine that checks for either completion or context cancellation
 			return
 		}
-		port := domain.Port{ID: id}
-
-		// consume remaining part of the item and unmarshal it into Port entity
-		err = dec.Decode(&port)
-		if err != nil {
-			p.handleError(err, errs)
-			return
-		}
-		ports <- port
+		ports <- *port
 	}
-	_, err = dec.Token() // consume closing curly braces
-	if err != nil {
-		p.handleError(err, errs)
-		return
-	}
-	done <- true // finishes go routine that checks for either completion or context cancellation
 }
 
 func (p *parser) handleError(err error, errs chan<- error) {
 	log.Printf("[ERROR] " + err.Error())
 	errs <- err
+}
+
+// newIterator creates an iterator function.
+// The iterator function returns the next port in the input JSON stream.
+// When it finished reading, the iterator function returns nil.
+// If the input JSON stream is not valid, the iterator function returns an error.
+func newIterator(jsonStream io.Reader) func() (*domain.Port, error) {
+	dec := json.NewDecoder(jsonStream)
+	_, err := dec.Token() // read opening curly bracket
+	if err != nil {
+		return func() (*domain.Port, error) {
+			return nil, err
+		}
+	}
+
+	return func() (*domain.Port, error) {
+		if !dec.More() {
+			_, err = dec.Token() // read closing curly bracket
+			if err != nil {
+				return nil, err
+			}
+			return nil, nil
+		}
+
+		// port ID is a different token on each item, therefore we just consume it as a string token
+		tokenID, err := dec.Token()
+		if err != nil {
+			return nil, err
+		}
+		id, ok := tokenID.(string)
+		if !ok {
+			return nil, ErrCastTokenIDString
+		}
+		port := domain.Port{ID: id}
+
+		// read remaining part of the item and unmarshal it into Port entity
+		err = dec.Decode(&port)
+		if err != nil {
+			return nil, err
+		}
+
+		return &port, nil
+	}
 }
