@@ -27,5 +27,17 @@ jobs:
     - name: Build
       run: make build
 
-    - name: Test
-      run: make test
+    - name: Test Coverage
+      run: make test-coverage
+
+    - name: Upload unit test results
+      uses: actions/upload-artifact@v3
+      with:
+        name: unit-test-results
+        path: unit-test-results.json
+
+    - name: Upload unit test coverage
+      uses: actions/upload-artifact@v3
+      with:
+        name: unit-test-coverage
+        path: unit-test-coverage.html

@@ -21,3 +21,6 @@
 go.work
 
 ports-app
+
+*coverage*
+*test-results*
