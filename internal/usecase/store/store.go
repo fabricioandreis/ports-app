@@ -23,7 +23,6 @@ func (usc *StoreUsecase) Store(ctx context.Context, jsonStream io.Reader) (int, 
 	go parser.parseStream(ctx, jsonStream, ports, errs)
 
 	count := 0
-
 	for {
 		select {
 		case port, ok := <-ports:

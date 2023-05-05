@@ -5,6 +5,7 @@ import (
 	"errors"
 	"sync"
 
+	"github.com/fabricioandreis/ports-app/internal/contracts/repository"
 	"github.com/fabricioandreis/ports-app/internal/domain"
 )
 
@@ -12,7 +13,7 @@ type PortRepository struct {
 	db sync.Map
 }
 
-func NewPortRepository() *PortRepository {
+func NewPortRepository() repository.Port {
 	return &PortRepository{db: sync.Map{}}
 }
 
