@@ -61,7 +61,8 @@ func (p *parser) parseStream(ctx context.Context, jsonStream io.Reader, ports ch
 }
 
 func (p *parser) handleError(err error, errs chan<- error) {
-	log.Printf("[ERROR] " + err.Error())
+	err = errors.Join(errors.New("unable to parse input JSON stream"), err)
+	log.Println(err.Error())
 	errs <- err
 }
 

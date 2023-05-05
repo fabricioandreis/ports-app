@@ -26,7 +26,10 @@ func main() {
 
 	repoPort := db.NewPortRepository(config.RedisAddress, config.RedisPassword)
 	storeUsecase := store.NewStoreUsecase(repoPort)
-	storeUsecase.Store(context.Background(), inputFile)
+	count, err := storeUsecase.Store(context.Background(), inputFile)
+	if err != nil {
+		log.Fatalf(errors.Join(errors.New("unable to process store Ports use case"), err).Error())
+	}
 
-	log.Println("Finished storing data")
+	log.Printf("Finished storing %v ports\n", count)
 }
