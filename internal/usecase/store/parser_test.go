@@ -135,19 +135,17 @@ func parseStream(ctx context.Context, jsonStream io.Reader) ([]domain.Port, erro
 
 	go p.parseStream(ctx, jsonStream, ports, errs)
 	res := []domain.Port{}
-	var err error
-loop:
 	for {
 		select {
 		case p, ok := <-ports:
-			if ok {
-				res = append(res, p)
+			if !ok {
+				return res, nil
 			}
-		case err = <-errs:
-			break loop
+			res = append(res, p)
+		case err := <-errs:
+			return res, err
 		}
 	}
-	return res, err
 }
 
 type blockingIOReader struct{}
