@@ -31,15 +31,15 @@ var portRioGrande = domain.Port{
 
 func TestPortRepository(t *testing.T) {
 	repos := []struct {
-		repo    repository.Port
+		repo    func() repository.Port
 		enabled bool
 	}{
 		{
-			repo:    stub.NewPortRepository(),
+			repo:    func() repository.Port { return stub.NewPortRepository() },
 			enabled: true,
 		},
 		{
-			repo:    db.NewPortRepository(db.NewClient("localhost:6379", "")),
+			repo:    func() repository.Port { return db.NewPortRepository(db.NewClient("localhost:6379", "")) },
 			enabled: false,
 		},
 	}
@@ -49,9 +49,10 @@ func TestPortRepository(t *testing.T) {
 			continue
 		}
 
+		repo := data.repo()
 		t.Run(fmt.Sprintf("Repo %v: Should be able to store port and retrieve it", i+1), func(t *testing.T) {
-			err1 := data.repo.Put(context.Background(), portRioGrande)
-			found, err2 := data.repo.Get(context.Background(), portRioGrande.ID)
+			err1 := repo.Put(context.Background(), portRioGrande)
+			found, err2 := repo.Get(context.Background(), portRioGrande.ID)
 
 			assert.NoError(t, err1)
 			assert.NoError(t, err2)
