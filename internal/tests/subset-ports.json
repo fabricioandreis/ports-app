@@ -1,0 +1,669 @@
+[
+  {
+    "id": "AEAJM",
+    "name": "Ajman",
+    "city": "Ajman",
+    "country": "United Arab Emirates",
+    "alias": [],
+    "regions": [],
+    "coordinates": [
+      55.5136433,
+      25.4052165
+    ],
+    "province": "Ajman",
+    "timezone": "Asia/Dubai",
+    "unlocs": [
+      "AEAJM"
+    ],
+    "code": "52000"
+  },
+  {
+    "id": "AEAUH",
+    "name": "Abu Dhabi",
+    "coordinates": [
+      54.37,
+      24.47
+    ],
+    "city": "Abu Dhabi",
+    "province": "Abu Z¸aby [Abu Dhabi]",
+    "country": "United Arab Emirates",
+    "alias": [],
+    "regions": [],
+    "timezone": "Asia/Dubai",
+    "unlocs": [
+      "AEAUH"
+    ],
+    "code": "52001"
+  },
+  {
+    "id": "AEDXB",
+    "name": "Dubai",
+    "coordinates": [
+      55.27,
+      25.25
+    ],
+    "city": "Dubai",
+    "province": "Dubayy [Dubai]",
+    "country": "United Arab Emirates",
+    "alias": [],
+    "regions": [],
+    "timezone": "Asia/Dubai",
+    "unlocs": [
+      "AEDXB"
+    ],
+    "code": "52005"
+  },
+  {
+    "id": "AEFJR",
+    "name": "Al Fujayrah",
+    "coordinates": [
+      56.33,
+      25.12
+    ],
+    "city": "Al Fujayrah",
+    "province": "Al Fujayrah",
+    "country": "United Arab Emirates",
+    "alias": [],
+    "regions": [],
+    "timezone": "Asia/Dubai",
+    "unlocs": [
+      "AEFJR"
+    ]
+  },
+  {
+    "id": "AEJEA",
+    "name": "Jebel Ali",
+    "city": "Jebel Ali",
+    "country": "United Arab Emirates",
+    "alias": [],
+    "regions": [],
+    "coordinates": [
+      55.0272904,
+      24.9857145
+    ],
+    "province": "Dubai",
+    "timezone": "Asia/Dubai",
+    "unlocs": [
+      "AEJEA"
+    ],
+    "code": "52051"
+  },
+  {
+    "id": "AEJED",
+    "name": "Jebel Dhanna",
+    "city": "Jebel Dhanna",
+    "country": "United Arab Emirates",
+    "alias": [],
+    "regions": [],
+    "coordinates": [
+      52.6126027,
+      24.1915137
+    ],
+    "province": "Abu Dhabi",
+    "timezone": "Asia/Dubai",
+    "unlocs": [
+      "AEJED"
+    ],
+    "code": "52050"
+  },
+  {
+    "id": "AEKLF",
+    "name": "Khor al Fakkan",
+    "coordinates": [
+      56.35,
+      25.33
+    ],
+    "city": "Khor al Fakkan",
+    "country": "United Arab Emirates",
+    "alias": [],
+    "regions": [],
+    "timezone": "Asia/Dubai",
+    "unlocs": [
+      "AEKLF"
+    ]
+  },
+  {
+    "id": "AEPRA",
+    "name": "Port Rashid",
+    "city": "Port Rashid",
+    "country": "United Arab Emirates",
+    "alias": [],
+    "regions": [],
+    "coordinates": [
+      55.2756505,
+      25.284755
+    ],
+    "province": "Dubai",
+    "timezone": "Asia/Dubai",
+    "unlocs": [
+      "AEPRA"
+    ],
+    "code": "52005"
+  },
+  {
+    "id": "AEQIW",
+    "name": "Umm al Qaiwain",
+    "coordinates": [
+      55.55,
+      25.57
+    ],
+    "city": "Umm al Qaiwain",
+    "country": "United Arab Emirates",
+    "alias": [],
+    "regions": [],
+    "province": "Umm Al Quwain",
+    "timezone": "Asia/Dubai",
+    "unlocs": [
+      "AEQIW"
+    ]
+  },
+  {
+    "id": "AERKT",
+    "name": "Ras al Khaimah",
+    "coordinates": [
+      55.95,
+      25.78
+    ],
+    "city": "Ras al Khaimah",
+    "country": "United Arab Emirates",
+    "alias": [],
+    "regions": [],
+    "province": "Ras al Khaimah",
+    "timezone": "Asia/Dubai",
+    "unlocs": [
+      "AERKT"
+    ],
+    "code": "52000"
+  },
+  {
+    "id": "AERUW",
+    "name": "Ar Ruways",
+    "coordinates": [
+      52.73,
+      24.12
+    ],
+    "city": "Ar Ruways",
+    "country": "United Arab Emirates",
+    "alias": [],
+    "regions": [],
+    "province": "Abu Dhabi",
+    "timezone": "Asia/Dubai",
+    "unlocs": [
+      "AERUW"
+    ]
+  },
+  {
+    "id": "AESHJ",
+    "name": "Sharjah",
+    "coordinates": [
+      55.38,
+      25.35
+    ],
+    "city": "Sharjah",
+    "province": "Ash Shariqah [Sharjah]",
+    "country": "United Arab Emirates",
+    "alias": [],
+    "regions": [],
+    "timezone": "Asia/Dubai",
+    "unlocs": [
+      "AESHJ"
+    ],
+    "code": "52070"
+  },
+  {
+    "id": "AGANU",
+    "name": "Antigua",
+    "city": "Antigua",
+    "country": "Antigua and Barbuda",
+    "alias": [],
+    "regions": [],
+    "coordinates": [
+      -61.8175207,
+      17.0746557
+    ],
+    "timezone": "America/Antigua",
+    "unlocs": [
+      "AGANU"
+    ],
+    "code": "24831"
+  },
+  {
+    "id": "AGSJO",
+    "name": "Saint John's",
+    "coordinates": [
+      -61.85,
+      17.12
+    ],
+    "city": "Saint John's",
+    "country": "Antigua and Barbuda",
+    "alias": [],
+    "regions": [],
+    "province": "Saint John",
+    "timezone": "America/Antigua",
+    "unlocs": [
+      "AGSJO"
+    ],
+    "code": "24831"
+  },
+  {
+    "id": "NZNPL",
+    "name": "New Plymouth",
+    "coordinates": [
+      174.02,
+      -39.05
+    ],
+    "city": "New Plymouth",
+    "province": "Taranaki",
+    "country": "New Zealand",
+    "alias": [],
+    "regions": [],
+    "timezone": "Pacific/Auckland",
+    "unlocs": [
+      "NZNPL"
+    ],
+    "code": "61423"
+  },
+  {
+    "id": "NZNSN",
+    "name": "Nelson",
+    "coordinates": [
+      173.27,
+      -41.25
+    ],
+    "city": "Nelson",
+    "province": "Nelson City",
+    "country": "New Zealand",
+    "alias": [],
+    "regions": [],
+    "timezone": "Pacific/Auckland",
+    "unlocs": [
+      "NZNSN"
+    ],
+    "code": "61406"
+  },
+  {
+    "id": "NZPMR",
+    "name": "Palmerston North",
+    "city": "Palmerston North",
+    "province": "Manawatu-Wanganui",
+    "country": "New Zealand",
+    "alias": [],
+    "regions": [],
+    "coordinates": [
+      175.6082145,
+      -40.3523065
+    ],
+    "timezone": "Pacific/Auckland",
+    "unlocs": [
+      "NZPMR"
+    ]
+  },
+  {
+    "id": "NZPOE",
+    "name": "Port Chalmers",
+    "coordinates": [
+      170.6,
+      -45.82
+    ],
+    "city": "Port Chalmers",
+    "province": "Otago",
+    "country": "New Zealand",
+    "alias": [],
+    "regions": [],
+    "timezone": "Pacific/Auckland",
+    "unlocs": [
+      "NZPOE"
+    ],
+    "code": "61431"
+  },
+  {
+    "id": "NZTIU",
+    "name": "Timaru",
+    "coordinates": [
+      171.25,
+      -44.38
+    ],
+    "city": "Timaru",
+    "province": "Canterbury",
+    "country": "New Zealand",
+    "alias": [],
+    "regions": [],
+    "timezone": "Pacific/Auckland",
+    "unlocs": [
+      "NZTIU"
+    ],
+    "code": "61445"
+  },
+  {
+    "id": "NZTKA",
+    "name": "Temuka",
+    "coordinates": [
+      171.27,
+      -44.25
+    ],
+    "city": "Temuka",
+    "province": "Canterbury",
+    "country": "New Zealand",
+    "alias": [],
+    "regions": [],
+    "timezone": "Pacific/Auckland",
+    "unlocs": [
+      "NZTKA"
+    ]
+  },
+  {
+    "id": "NZTRG",
+    "name": "Tauranga",
+    "coordinates": [
+      176.17,
+      -37.68
+    ],
+    "city": "Tauranga",
+    "province": "Bay of Plenty",
+    "country": "New Zealand",
+    "alias": [],
+    "regions": [],
+    "timezone": "Pacific/Auckland",
+    "unlocs": [
+      "NZTRG"
+    ],
+    "code": "61443"
+  },
+  {
+    "id": "NZWAG",
+    "name": "Wanganui",
+    "coordinates": [
+      174.98,
+      -39.93
+    ],
+    "city": "Wanganui",
+    "province": "Manawatu-Wanganui",
+    "country": "New Zealand",
+    "alias": [],
+    "regions": [],
+    "timezone": "Pacific/Auckland",
+    "unlocs": [
+      "NZWAG"
+    ],
+    "code": "61400"
+  },
+  {
+    "id": "NZWLG",
+    "name": "Wellington",
+    "coordinates": [
+      174.78,
+      -41.27
+    ],
+    "city": "Wellington",
+    "province": "Wellington",
+    "country": "New Zealand",
+    "alias": [],
+    "regions": [],
+    "timezone": "Pacific/Auckland",
+    "unlocs": [
+      "NZWLG"
+    ],
+    "code": "61447"
+  },
+  {
+    "id": "NZWRE",
+    "name": "Whangarei",
+    "coordinates": [
+      174.48,
+      -35.83
+    ],
+    "city": "Whangarei",
+    "province": "Northland",
+    "country": "New Zealand",
+    "alias": [],
+    "regions": [],
+    "timezone": "Pacific/Auckland",
+    "unlocs": [
+      "NZWRE"
+    ]
+  },
+  {
+    "id": "OMMCT",
+    "name": "Muscat",
+    "city": "Muscat",
+    "country": "Oman",
+    "alias": [],
+    "regions": [],
+    "coordinates": [
+      58.4059227,
+      23.58589
+    ],
+    "province": "Muscat Governorate",
+    "timezone": "Asia/Muscat",
+    "unlocs": [
+      "OMMCT"
+    ],
+    "code": "52325"
+  },
+  {
+    "id": "OMMNQ",
+    "name": "Mina' Qabus",
+    "coordinates": [
+      58.57,
+      23.62
+    ],
+    "city": "Mina' Qabus",
+    "province": "Masqat",
+    "country": "Oman",
+    "alias": [],
+    "regions": [],
+    "timezone": "Asia/Muscat",
+    "unlocs": [
+      "OMMNQ"
+    ]
+  },
+  {
+    "id": "OMOPQ",
+    "name": "Port Qaboos",
+    "city": "Port Qaboos",
+    "country": "Oman",
+    "alias": [],
+    "regions": [],
+    "coordinates": [
+      58.5615244,
+      23.6275477
+    ],
+    "province": "Muscat Governorate",
+    "timezone": "Asia/Muscat",
+    "unlocs": [
+      "OMOPQ"
+    ]
+  },
+  {
+    "id": "OMSLL",
+    "name": "Salalah",
+    "city": "Salalah",
+    "country": "Oman",
+    "alias": [],
+    "regions": [],
+    "coordinates": [
+      54.1065864,
+      17.0506675
+    ],
+    "province": "Dhofar Governorate",
+    "timezone": "Asia/Muscat",
+    "unlocs": [
+      "OMSLL"
+    ],
+    "code": "52330"
+  },
+  {
+    "id": "OMSOH",
+    "name": "Sohar",
+    "city": "Sohar",
+    "country": "Oman",
+    "alias": [],
+    "regions": [],
+    "coordinates": [
+      56.7075141,
+      24.3460959
+    ],
+    "province": "Al Batinah North Governorate",
+    "timezone": "Asia/Muscat",
+    "unlocs": [
+      "OMSOH"
+    ]
+  },
+  {
+    "id": "PAAML",
+    "name": "Puerto Armuelles",
+    "city": "Puerto Armuelles",
+    "country": "Panama",
+    "alias": [],
+    "regions": [],
+    "coordinates": [
+      -82.92864279999999,
+      8.3117647
+    ],
+    "province": "Chiriqui",
+    "timezone": "America/Panama",
+    "unlocs": [
+      "PAAML"
+    ],
+    "code": "22587"
+  },
+  {
+    "id": "PABLB",
+    "name": "Balboa",
+    "city": "Balboa",
+    "country": "Panama",
+    "alias": [],
+    "regions": [],
+    "coordinates": [
+      -79.5631537,
+      8.9613962
+    ],
+    "province": "Panama",
+    "timezone": "America/Panama",
+    "unlocs": [
+      "PABLB"
+    ],
+    "code": "22575"
+  },
+  {
+    "id": "PACFZ",
+    "name": "Colon Free Zone",
+    "coordinates": [
+      -79.9,
+      9.35
+    ],
+    "city": "Colón Free Zone",
+    "province": "Colón",
+    "country": "Panama",
+    "alias": [],
+    "regions": [],
+    "timezone": "America/Panama",
+    "unlocs": [
+      "PACFZ"
+    ]
+  },
+  {
+    "id": "PACSO",
+    "name": "Coco Solo",
+    "city": "Coco Solo",
+    "country": "Panama",
+    "alias": [],
+    "regions": [],
+    "coordinates": [
+      -79.879913,
+      9.368985
+    ],
+    "province": "Colon",
+    "timezone": "America/Panama",
+    "unlocs": [
+      "PACSO"
+    ],
+    "code": "22517"
+  },
+  {
+    "id": "PACTB",
+    "name": "Cristobal",
+    "coordinates": [
+      -79.9,
+      9.35
+    ],
+    "city": "Cristóbal",
+    "country": "Panama",
+    "alias": [],
+    "regions": [],
+    "province": "Colon",
+    "timezone": "America/Panama",
+    "unlocs": [
+      "PACTB"
+    ],
+    "code": "22518"
+  },
+  {
+    "id": "ZMLUN",
+    "name": "Lusaka",
+    "city": "Lusaka",
+    "country": "Zambia",
+    "alias": [],
+    "regions": [],
+    "coordinates": [
+      28.3228165,
+      -15.3875259
+    ],
+    "province": "Lusaka",
+    "timezone": "Africa/Lusaka",
+    "unlocs": [
+      "ZMLUN"
+    ]
+  },
+  {
+    "id": "ZWBUQ",
+    "name": "Bulawayo",
+    "city": "Bulawayo",
+    "country": "Zimbabwe",
+    "alias": [],
+    "regions": [],
+    "coordinates": [
+      28.626479,
+      -20.1325066
+    ],
+    "province": "Bulawayo",
+    "timezone": "Africa/Harare",
+    "unlocs": [
+      "ZWBUQ"
+    ]
+  },
+  {
+    "id": "ZWHRE",
+    "name": "Harare",
+    "city": "Harare",
+    "country": "Zimbabwe",
+    "alias": [],
+    "regions": [],
+    "coordinates": [
+      31.03351,
+      -17.8251657
+    ],
+    "province": "Harare",
+    "timezone": "Africa/Harare",
+    "unlocs": [
+      "ZWHRE"
+    ]
+  },
+  {
+    "id": "ZWUTA",
+    "name": "Mutare",
+    "city": "Mutare",
+    "country": "Zimbabwe",
+    "alias": [],
+    "regions": [],
+    "coordinates": [
+      32.650351,
+      -18.9757714
+    ],
+    "province": "Manicaland",
+    "timezone": "Africa/Harare",
+    "unlocs": [
+      "ZWUTA"
+    ]
+  }
+]

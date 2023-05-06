@@ -60,5 +60,5 @@ jobs:
         name: release-candidate
 
     - name: Run Acceptance Tests
-      run: make acceptance-tests
+      run: make pipeline-acceptance-tests
     

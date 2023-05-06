@@ -40,8 +40,9 @@ docker-brun: docker-build docker-run
 docker-push: docker-build
 	docker push fabricioandreis/ports-app
 
-up: build
-	docker compose up --abort-on-container-exit --exit-code-from app --remove-orphans
+local-acceptance-tests: build pipeline-acceptance-tests
 
-acceptance-tests:
-	docker compose up --build --abort-on-container-exit --exit-code-from app --remove-orphans
+# This rule does not build the binary, because during the pipeline it is downloaded from the artifact repository
+pipeline-acceptance-tests:
+	docker compose build
+	docker compose run acceptance-tests --build --exit-code-from acceptance-tests --remove-orphans
