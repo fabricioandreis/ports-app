@@ -11,7 +11,7 @@ on:
 
 jobs:
 
-  build:
+  continuous-integration:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
