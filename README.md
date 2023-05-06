@@ -7,7 +7,8 @@ This application reads Ports from an input JSON file and saves them into a Redis
 The system contains two main components:
 - A Docker container running a Go application that reads a JSON file mounted into it
 - A Docker container running a Redis database to store the Ports
-I created Docker Compose files to run the system locally on a development environment and also to run acceptance tests in a Continuous Delivery pipeline.
+
+I created Docker Compose files to run the system locally on a development environment and also to run acceptance tests on a Continuous Delivery pipeline.
 
 ## Architecture
 In my experience, one must pay attention to some important concepts and design choices when building software systems in order for them to implement the correct behavior, provide maintainability and be testable.
@@ -18,11 +19,19 @@ The application respects the Dependency Rule (a form of Dependency Inversion), w
 
 The way I achieved that was by injecting concrete implementations of contracts between packages (interfaces) into the higher level modules.
 
-Moreover, I practiced Test Driven Development during the design of the solution. I prefer this approach because it guides my design, forcing me to understand the core of the problem first and then design the business rules APIs from the outside in. A nice side effect of this is that there is a good (for the time available) unit test coverage of the high level modules of the application (package `usecase`).
+Moreover, I practiced Test Driven Development during the design of the solution. I prefer this approach because it guides my design, forcing me to understand the core of the problem first and then design the business rules' APIs from the outside in. A nice side effect of this is that there is a good (for the time available) unit test coverage of the high level modules of the application (package `usecase`).
 
-### Decision Records:
-- I decided to marshal data with Protocol Buffers when saving to the database in order to reduce the size of each object as compared to a JSON serialization.
-- The application reads the JSON file as an IO stream instead of loading all of the contents into main memory, because the input file could contain millions of rows, which probably would not fit into available memory.
+### Decision Records (ADRs)
+1. I decided to marshal data with Protocol Buffers when saving to the database in order to reduce the size of each object as compared to a JSON serialization.
+2. The application reads the JSON file as an IO stream instead of loading all of the contents into main memory, because the input file could contain millions of rows, which probably would not fit into available memory.
+3. The reading of the JSON file and the writing into the database are performed asynchronously in separate go routines that communicate exclusively via channels. I tried to adhere to the Go proverb "[don't communicate by sharing memory, share memory by communicating](https://www.youtube.com/watch?v=PAAkCSZUG1c&t=2m48s)".
+
+4. The build of the statically linked binary executable is performed outside Docker. I choose a **distroless** Docker image to run the application for the following reasons:
+   - Since the executable is statically linked, there are no dependencies on the Operating System, so no linux libraries are needed to run it
+   - A small base Docker image generates much smaller application containers
+   - Containers without unused dependencies are more secure because they reduce the attack surface
+5. I used context cancellation to provide a graceful shutdown of the application
+
 
 ### Structure
 - `cmd`: contains the entrypoint of the application
@@ -59,7 +68,7 @@ make local-acceptance-tests
 This will run a `docker compose run` command that:
 - builds and runs the Docker container of the application
 - runs a Redis in-memory database
-- builds and runs another Docker container to run the acceptance tests against the Redis database after the completion of the application
+- builds and runs another Docker container that performs the acceptance tests against the Redis database after the completion of the application
 
 
 ### Simulate SIGTERM
