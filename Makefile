@@ -20,10 +20,10 @@ clear:
 	rm -rf *test-results*
 
 test:
-	go test -cover ./... -race
+	go test -cover ./... -skip "TestAcceptance" -race
 
 test-coverage:
-	go test ./... -covermode=atomic -coverpkg=./... -coverprofile unit-test-coverage.out -race -json > unit-test-results.json
+	go test ./... -skip "TestAcceptance" -covermode=atomic -coverpkg=./... -coverprofile unit-test-coverage.out -race -json > unit-test-results.json
 	go tool cover -html unit-test-coverage.out -o unit-test-coverage.html
 
 proto:
