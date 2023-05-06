@@ -25,6 +25,22 @@ services:
     volumes:
       - redis:/data
 
+  acceptance-tests:
+    build:
+      dockerfile: ./internal/tests/Dockerfile
+      context: .
+      tags:
+        - "fabricioandreis/ports-app-accept-tests:latest"
+    environment:
+      - PORTS_INPUT_JSON_PATH=/data/ports.json
+      - REDIS_ADDRESS=redis:6379
+      - REDIS_PASSWORD=
+    volumes:
+      - ./internal/tests/subset-ports.json:/data/ports.json
+    depends_on:
+      app:
+        condition: service_completed_successfully
+
 volumes:
   redis:
     driver: local

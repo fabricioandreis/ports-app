@@ -16,13 +16,13 @@ type parser struct {
 	jsonStream io.Reader
 }
 
+func newParser(jsonStream io.Reader) *parser {
+	return &parser{jsonStream}
+}
+
 type result struct {
 	port domain.Port
 	err  error
-}
-
-func newParser(jsonStream io.Reader) *parser {
-	return &parser{jsonStream}
 }
 
 // parse produces Ports from an input stream into an output channel.
