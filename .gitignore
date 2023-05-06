@@ -24,3 +24,4 @@ ports-app
 
 *coverage*
 *test-results*
+acceptance-tests-results.log

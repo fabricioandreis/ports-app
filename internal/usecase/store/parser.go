@@ -9,8 +9,6 @@ import (
 	"github.com/fabricioandreis/ports-app/internal/domain"
 )
 
-var ErrCastTokenIDString = errors.New("unable to cast token ID to string")
-
 // A parser parses an input JSON stream of a known file format for Ports.
 type parser struct {
 	jsonStream io.Reader
@@ -25,14 +23,14 @@ type result struct {
 	err  error
 }
 
-// parse produces Ports from an input stream into an output channel.
-// If an error occurs when trying to unmarshal the JSON stream, an error is sent to another output channel.
+// parse produces Ports from an input stream as results into an output channel.
+// If an error occurs when trying to unmarshal the JSON stream, an error is set to the result into the output channel.
 // The method handles context cancellation by writing an error right away into the output channel.
 func (p *parser) parse(ctx context.Context, results chan<- result) {
 	defer func() {
-		log.Println("Closing parser channels")
+		log.Println("Closing parser channel...")
 		close(results)
-		log.Println("Closed parser channels")
+		log.Println("Closed parser channel")
 	}()
 
 	iterator := newJsonIterator(p.jsonStream)

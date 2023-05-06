@@ -16,6 +16,7 @@ func NewStoreUsecase(repoPort repository.Port) *StoreUsecase {
 	return &StoreUsecase{repoPort}
 }
 
+// Store reads an input JSON stream, convert its contents do Port entities and saves them into the repository
 func (usc *StoreUsecase) Store(ctx context.Context, jsonStream io.Reader) (int, error) {
 	log.Println("Storing data from input JSON stream into database")
 

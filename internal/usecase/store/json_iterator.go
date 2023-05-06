@@ -3,10 +3,13 @@ package store
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"io"
 
 	"github.com/fabricioandreis/ports-app/internal/domain"
 )
+
+var ErrCastTokenIDString = errors.New("unable to cast token ID to string")
 
 // A jsonIterator returns the next port in the input JSON stream.
 // When it finished reading, it returns nil.
@@ -67,7 +70,7 @@ func (it *jsonIterator) iterate() (*domain.Port, error) {
 		return nil, nil
 	}
 
-	// port ID is a different token on each item, therefore we just consume it as a string token
+	// port ID is a different token on each item, therefore we just read it as a string token
 	tokenID, err := it.dec.Token()
 	if err != nil {
 		return nil, err
