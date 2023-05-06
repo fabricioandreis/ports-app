@@ -1,5 +1,5 @@
 # Ports application
-[![Continuous Delivery pipeline](https://github.com/fabricioandreis/ports-app/actions/workflows/go.yml/badge.svg)](https://github.com/fabricioandreis/ports-app/actions/workflows/go.yml)
+[![Continuous Delivery pipeline](https://github.com/fabricioandreis/ports-app/actions/workflows/continuous-delivery.yml/badge.svg)](https://github.com/fabricioandreis/ports-app/actions/workflows/continuous-delivery.yml)
 
 This application reads Ports from an input JSON file and saves them into a Redis in-memory database.
 
