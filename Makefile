@@ -23,8 +23,8 @@ test:
 	go test -cover ./... -skip "TestAcceptance" -race
 
 test-coverage:
-	go test ./... -skip "TestAcceptance" -covermode=atomic -coverpkg=./... -coverprofile unit-test-coverage.out -race -json > unit-test-results.json
-	go tool cover -html unit-test-coverage.out -o unit-test-coverage.html
+	go test ./... -skip "TestAcceptance" -covermode=atomic -coverpkg=./... -coverprofile unit-tests-coverage.out -race -json > unit-test-results.json
+	go tool cover -html unit-tests-coverage.out -o unit-tests-coverage.html
 
 proto:
 	protoc --go_opt=paths=source_relative --proto_path=./internal/infra/db/proto --go_out=./internal/infra/db/proto ./internal/infra/db/proto/port.proto
@@ -48,4 +48,4 @@ local-acceptance-tests: build pipeline-acceptance-tests
 # This rule does not build the binary, because during the pipeline it is downloaded from the artifact repository
 pipeline-acceptance-tests:
 	docker compose --file docker-compose-accept-tests.yaml build
-	docker compose --file docker-compose-accept-tests.yaml run acceptance-tests --exit-code-from acceptance-tests --remove-orphans 
+	docker compose --file docker-compose-accept-tests.yaml run acceptance-tests --exit-code-from acceptance-tests --remove-orphans > acceptance-tests-results.log

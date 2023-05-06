@@ -30,17 +30,17 @@ jobs:
     - name: Test Coverage
       run: make test-coverage
 
-    - name: Archive unit test results
+    - name: Archive unit tests results
       uses: actions/upload-artifact@v3
       with:
         name: unit-test-results
         path: unit-test-results.json
 
-    - name: Archive unit test coverage
+    - name: Archive unit tests coverage
       uses: actions/upload-artifact@v3
       with:
-        name: unit-test-coverage
-        path: unit-test-coverage.html
+        name: unit-tests-coverage
+        path: unit-tests-coverage.html
 
     - name: Archive release candidate
       uses: actions/upload-artifact@v3
@@ -61,4 +61,11 @@ jobs:
 
     - name: Run Acceptance Tests
       run: make pipeline-acceptance-tests
+    
+    - name: Archive acceptance tests results
+      uses: actions/upload-artifact@v3
+      with:
+        name: acceptance-tests-results
+        path: acceptance-tests-results.log
+
     
