@@ -35,10 +35,10 @@ func (usc *StoreUsecase) Store(ctx context.Context, jsonStream io.Reader) (int, 
 			count++
 		case <-ctx.Done():
 			// Busy wait after context is Done until parser.parseStream closes its channels
-			log.Println("Busy waiting for parser to finish processing...")
+			log.Println("Busy waiting for store use case to process all results in channel...")
 			_, resultsOpen := <-results
 			if !resultsOpen {
-				log.Println("Parser finished processing, finishing store use case...")
+				log.Println("Store use case processed results, finishing store use case...")
 				return count, ctx.Err()
 			}
 		}
