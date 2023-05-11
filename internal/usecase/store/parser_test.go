@@ -126,7 +126,7 @@ func TestParser(t *testing.T) {
 
 func TestStopProcessing(t *testing.T) {
 	t.Run("Should gracefully stop processing when context is cancelled", func(t *testing.T) {
-		input := &blockingIOReader{}
+		input := &slowReader{}
 		ctx, cancel := context.WithCancel(context.Background())
 
 		chPorts := make(chan []domain.Port)
@@ -137,7 +137,7 @@ func TestStopProcessing(t *testing.T) {
 			chPorts <- res
 			chErrs <- err
 		}()
-		time.Sleep(time.Second) // waits some time for the go routine above to start
+		time.Sleep(200 * time.Millisecond) // waits some time for the go routine above to start
 		cancel()
 
 		assert.Len(t, <-chPorts, 0)
@@ -161,10 +161,9 @@ func parseStream(ctx context.Context, jsonStream io.Reader) ([]domain.Port, erro
 	return ports, nil
 }
 
-type blockingIOReader struct{}
+type slowReader struct{}
 
-func (r *blockingIOReader) Read(p []byte) (n int, err error) {
-	ch := make(chan bool)
-	<-ch // blocks forever
-	return 0, nil
+func (r *slowReader) Read(p []byte) (n int, err error) {
+	time.Sleep(time.Second)
+	return 0, io.EOF
 }

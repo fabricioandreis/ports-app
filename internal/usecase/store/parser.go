@@ -35,7 +35,7 @@ func (p *parser) parse(ctx context.Context, results chan<- result) {
 
 	iterator := newJsonIterator(p.jsonStream)
 	for {
-		port, err := iterator.next(ctx)
+		port, err := iterator.next()
 
 		select {
 		case <-ctx.Done():

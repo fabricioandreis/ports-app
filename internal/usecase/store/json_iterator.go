@@ -1,7 +1,6 @@
 package store
 
 import (
-	"context"
 	"encoding/json"
 	"errors"
 	"io"
@@ -26,35 +25,7 @@ func newJsonIterator(jsonStream io.Reader) jsonIterator {
 	}
 }
 
-func (it *jsonIterator) next(ctx context.Context) (*domain.Port, error) {
-	type pack struct {
-		port *domain.Port
-		err  error
-	}
-	data := make(chan pack)
-
-	// iterates on a separate goroutine to allow for context cancellation of blocking reads
-	go func() {
-		port, err := it.iterate()
-		d := pack{port, err}
-		select {
-		case <-ctx.Done():
-			close(data)
-			return
-		default:
-			data <- d
-		}
-	}()
-
-	select {
-	case <-ctx.Done():
-		return nil, ctx.Err()
-	case d := <-data:
-		return d.port, d.err
-	}
-}
-
-func (it *jsonIterator) iterate() (*domain.Port, error) {
+func (it *jsonIterator) next() (*domain.Port, error) {
 	if !it.started {
 		_, err := it.dec.Token() // read opening curly bracket
 		if err != nil {
