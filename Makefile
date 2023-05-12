@@ -40,7 +40,7 @@ docker-brun: docker-build docker-run
 docker-push: docker-build
 	docker push fabricioandreis/ports-app
 
-local:
+local: build
 	docker compose up --build --exit-code-from app --remove-orphans
 
 local-acceptance-tests: build pipeline-acceptance-tests
