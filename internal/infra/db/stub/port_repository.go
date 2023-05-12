@@ -10,35 +10,14 @@ import (
 )
 
 type PortRepository struct {
-	db  sync.Map
-	cfg config
+	db sync.Map
 }
 
-type config struct {
-	errToReturn error
-}
-
-type option func(c *config)
-
-func WithError(err error) option {
-	return func(c *config) {
-		c.errToReturn = err
-	}
-}
-
-func NewPortRepository(opts ...option) repository.Port {
-	repo := &PortRepository{db: sync.Map{}}
-	for _, opt := range opts {
-		opt(&repo.cfg)
-	}
-	return repo
+func NewPortRepository() repository.Port {
+	return &PortRepository{db: sync.Map{}}
 }
 
 func (repo *PortRepository) Get(ctx context.Context, portID string) (*ports.Port, error) {
-	if repo.cfg.errToReturn != nil {
-		return nil, repo.cfg.errToReturn
-	}
-
 	res, ok := repo.db.Load(portID)
 	if !ok {
 		return nil, nil
@@ -51,10 +30,6 @@ func (repo *PortRepository) Get(ctx context.Context, portID string) (*ports.Port
 
 }
 func (repo *PortRepository) Put(ctx context.Context, port ports.Port) error {
-	if repo.cfg.errToReturn != nil {
-		return repo.cfg.errToReturn
-	}
-
 	repo.db.Store(port.ID, port)
 	return nil
 }
