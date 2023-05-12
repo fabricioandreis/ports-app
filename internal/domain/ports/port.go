@@ -9,7 +9,11 @@ type Port struct {
 	Country     string
 	Timezone    string
 	Alias       []string
-	Coordinates []float32
+	Coordinates Coordinates
 	Regions     []string
 	Unlocs      []string
+}
+
+type Coordinates struct {
+	Lat, Long float32
 }
