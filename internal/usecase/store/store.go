@@ -21,8 +21,7 @@ func (usc *StoreUsecase) Store(ctx context.Context, jsonStream io.Reader) (int, 
 	log.Println("Storing data from input JSON stream into database")
 
 	parser := newParser(jsonStream)
-	results := make(chan result, 100)
-	go parser.parse(ctx, results)
+	results := parser.parse(ctx)
 
 	count := 0
 	for {

@@ -23,38 +23,43 @@ type result struct {
 	err  error
 }
 
-// parse produces Ports from an input stream as results into an output channel.
+// parse produces Ports from an input stream and returns a readonly output channel for the consumer to read the results.
 // If an error occurs when trying to unmarshal the JSON stream, an error is set to the result into the output channel.
 // The method handles context cancellation by writing an error right away into the output channel.
-func (p *parser) parse(ctx context.Context, results chan<- result) {
-	defer func() {
-		log.Println("Closing parser channel...")
-		close(results)
-		log.Println("Closed parser channel")
+func (p *parser) parse(ctx context.Context) <-chan result {
+	results := make(chan result, 100)
+	go func() {
+		defer func() {
+			log.Println("Closing parser channel...")
+			close(results)
+			log.Println("Closed parser channel")
+		}()
+
+		iterator := newJsonIterator(p.jsonStream)
+		for {
+			port, err := iterator.next()
+
+			select {
+			case <-ctx.Done():
+				p.handleError(ctx.Err(), results)
+				log.Println("Context cancelled, finishing parser...")
+				return
+			default:
+				if err != nil {
+					p.handleError(err, results)
+					return
+				}
+				if port == nil {
+					log.Println("Parsed input JSON stream")
+					return
+				}
+				log.Println("Read port " + port.ID)
+				results <- result{port: *port}
+			}
+		}
 	}()
 
-	iterator := newJsonIterator(p.jsonStream)
-	for {
-		port, err := iterator.next()
-
-		select {
-		case <-ctx.Done():
-			p.handleError(ctx.Err(), results)
-			log.Println("Context cancelled, finishing parser...")
-			return
-		default:
-			if err != nil {
-				p.handleError(err, results)
-				return
-			}
-			if port == nil {
-				log.Println("Parsed input JSON stream")
-				return
-			}
-			log.Println("Read port " + port.ID)
-			results <- result{port: *port}
-		}
-	}
+	return results
 }
 
 func (p *parser) handleError(err error, results chan<- result) {

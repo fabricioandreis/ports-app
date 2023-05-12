@@ -148,9 +148,8 @@ func TestStopProcessing(t *testing.T) {
 
 func parseStream(ctx context.Context, jsonStream io.Reader) ([]domain.Port, error) {
 	p := newParser(jsonStream)
-	results := make(chan result)
 
-	go p.parse(ctx, results)
+	results := p.parse(ctx)
 	ports := []domain.Port{}
 	for res := range results {
 		if res.err != nil {
