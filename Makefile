@@ -9,6 +9,13 @@ dep:
 vet:
 	go vet ./...
 
+lint:
+	golangci-lint run --enable-all
+
+install-lint:
+	sudo curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sudo sh -s -- -b $(go env GOPATH)/bin 
+	golangci-lint --version
+
 build:
 	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o ${BINARY_NAME} -ldflags="-s -w" cmd/main.go
 
