@@ -24,6 +24,7 @@ func getEnv(key string) string {
 	if len(value) == 0 {
 		log.Println("Empty value for " + key)
 	}
+
 	return value
 }
 
@@ -31,5 +32,6 @@ func ifEmpty(str1, str2 string) string {
 	if len(str1) == 0 {
 		return str2
 	}
+
 	return str1
 }

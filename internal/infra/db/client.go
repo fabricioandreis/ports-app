@@ -30,7 +30,8 @@ func NewClient(address, password string) (Client, error) {
 	if redisClient == nil {
 		return Client{}, errors.Join(ErrCreatingClient, errors.New("error creating Redis client at "+address))
 	}
-	if err := redisClient.Ping(context.Background()).Err(); err != nil {
+	err := redisClient.Ping(context.Background()).Err()
+	if err != nil {
 		return Client{}, errors.Join(ErrConnectingDatabase, errors.New("error connecting to Redis database at "+address))
 	}
 	return Client{redisClient}, nil
