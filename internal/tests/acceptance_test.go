@@ -49,9 +49,12 @@ func TestAcceptance(t *testing.T) {
 		assert.Equal(t, e.Country, found.Country)
 		assert.Equal(t, e.Timezone, found.Timezone)
 		assert.ElementsMatch(t, e.Alias, found.Alias)
-		assert.ElementsMatch(t, e.Coordinates, found.Coordinates)
 		assert.ElementsMatch(t, e.Regions, found.Regions)
 		assert.ElementsMatch(t, e.Unlocs, found.Unlocs)
+		if len(e.Coordinates) == 2 {
+			assert.Equal(t, e.Coordinates[0], found.Coordinates.Lat)
+			assert.Equal(t, e.Coordinates[01], found.Coordinates.Long)
+		}
 
 		t.Logf("Found port %s in database and all its fields match the expected values", e.ID)
 	}
