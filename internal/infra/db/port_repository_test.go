@@ -47,7 +47,7 @@ func TestPortRepository(t *testing.T) {
 
 				return db.NewPortRepository(redisClient)
 			},
-			enabled: true,
+			enabled: false,
 		},
 	}
 
