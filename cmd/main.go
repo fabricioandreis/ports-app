@@ -24,6 +24,7 @@ func main() {
 	redis, err := db.NewClient(config.RedisAddress, config.RedisPassword)
 	if err != nil {
 		log.Println(err.Error())
+		cancel()
 		// cannot proceed without a database and no connections to free
 		os.Exit(1)
 	}
