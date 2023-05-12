@@ -30,7 +30,10 @@ func (usc *StoreUsecase) Store(ctx context.Context, jsonStream io.Reader) (int, 
 			if !ok || res.err != nil {
 				return count, res.err
 			}
-			usc.repoPort.Put(ctx, res.port)
+			err := usc.repoPort.Put(ctx, res.port)
+			if err != nil {
+				return count, err
+			}
 			count++
 		case <-ctx.Done():
 			// Busy wait after context is Done until parser.parseStream closes its channels
