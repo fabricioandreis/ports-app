@@ -6,7 +6,7 @@ import (
 	"io"
 	"log"
 
-	"github.com/fabricioandreis/ports-app/internal/domain"
+	"github.com/fabricioandreis/ports-app/internal/domain/ports"
 )
 
 // A parser parses an input JSON stream of a known file format for Ports.
@@ -19,7 +19,7 @@ func newParser(jsonStream io.Reader) *parser {
 }
 
 type result struct {
-	port domain.Port
+	port ports.Port
 	err  error
 }
 

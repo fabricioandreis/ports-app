@@ -6,7 +6,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/fabricioandreis/ports-app/internal/domain"
+	"github.com/fabricioandreis/ports-app/internal/domain/ports"
 	"github.com/fabricioandreis/ports-app/internal/infra/db/stub"
 	"github.com/fabricioandreis/ports-app/internal/usecase/store"
 	"github.com/google/go-cmp/cmp"
@@ -15,7 +15,7 @@ import (
 )
 
 var (
-	portRioGrande = domain.Port{
+	portRioGrande = ports.Port{
 		ID:          "BRRIG",
 		Code:        "35173",
 		Name:        "RioGrande",

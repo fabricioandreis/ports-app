@@ -8,13 +8,13 @@ import (
 	"testing"
 	"time"
 
-	"github.com/fabricioandreis/ports-app/internal/domain"
+	"github.com/fabricioandreis/ports-app/internal/domain/ports"
 	"github.com/google/go-cmp/cmp"
 	"github.com/stretchr/testify/assert"
 )
 
 var (
-	portParanagua = domain.Port{
+	portParanagua = ports.Port{
 		ID:          "BRPNG",
 		Code:        "35159",
 		Name:        "Paranagua",
@@ -27,7 +27,7 @@ var (
 		Regions:     []string{"America", "Latin America"},
 		Unlocs:      []string{"BRPNG"},
 	}
-	portItaqui = domain.Port{
+	portItaqui = ports.Port{
 		ID:          "BRITQ",
 		Code:        "35135",
 		Name:        "Itaqui",
@@ -46,16 +46,16 @@ func TestParser(t *testing.T) {
 	t.Run("Should be able to parse a simple JSON input stream containing ports in a known format", func(t *testing.T) {
 		tests := []struct {
 			input  io.Reader
-			output []domain.Port
+			output []ports.Port
 		}{
 			{
 				input: strings.NewReader(
 					`{"BRPNG":{"name":"Paranagua","coordinates":[-48.5,-25.52],"city":"Paranaguá","province":"Paraná","country":"Brazil","alias":["br_par_01", "br_par_001"],"regions":["America", "Latin America"],"timezone":"America/Sao_Paulo","unlocs":["BRPNG"],"code":"35159"}, "BRITQ":{"name":"Itaqui","city":"Itaqui","province":"RioGrandedoSul","country":"Brazil","alias":[],"regions":[],"coordinates":[-56.5481122,-29.1294007],"timezone":"America/Sao_Paulo","unlocs":["BRITQ"],"code":"35135"}}`),
-				output: []domain.Port{portParanagua, portItaqui},
+				output: []ports.Port{portParanagua, portItaqui},
 			},
 			{
 				input:  strings.NewReader(`{}`),
-				output: []domain.Port{},
+				output: []ports.Port{},
 			},
 		}
 
@@ -76,36 +76,36 @@ func TestParser(t *testing.T) {
 	t.Run("Should return error when input in an invalid JSON stream but also partially process the stream up until the syntax error", func(t *testing.T) {
 		tests := []struct {
 			input  io.Reader
-			output []domain.Port
+			output []ports.Port
 			errStr string
 		}{
 			{
 				input: strings.NewReader(
 					`"BRPNG":{"name":Paranagua","coordinates":[-48.5,-25.52],"city":"Paranaguá","province":"Paraná","country":"Brazil","alias":["br_par_01", "br_par_001"],"regions":["America", "Latin America"],"timezone":"America/Sao_Paulo","unlocs":["BRPNG"],"code":"35159"}}`),
-				output: []domain.Port{},
+				output: []ports.Port{},
 				errStr: "invalid character ':' looking for beginning of value",
 			},
 			{
 				input:  strings.NewReader(`a`),
-				output: []domain.Port{},
+				output: []ports.Port{},
 				errStr: "invalid character 'a' looking for beginning of value",
 			},
 			{
 				input: strings.NewReader(
 					`[{"BRPNG":{"name":Paranagua","coordinates":[-48.5,-25.52],"city":"Paranaguá","province":"Paraná","country":"Brazil","alias":["br_par_01", "br_par_001"],"regions":["America", "Latin America"],"timezone":"America/Sao_Paulo","unlocs":["BRPNG"],"code":"35159"}}]`),
-				output: []domain.Port{},
+				output: []ports.Port{},
 				errStr: ErrCastTokenIDString.Error(),
 			},
 			{
 				input: strings.NewReader(
 					`{"BRPNG":{"name":Paranagua","coordinates":[-48.5,-25.52],"city":"Paranaguá","province":"Paraná","country":"Brazil","alias":["br_par_01", "br_par_001"],"regions":["America", "Latin America"],"timezone":"America/Sao_Paulo","unlocs":["BRPNG"],"code":"35159"}}`),
-				output: []domain.Port{},
+				output: []ports.Port{},
 				errStr: "invalid character 'P' looking for beginning of value",
 			},
 			{
 				input: strings.NewReader(
 					`{"BRPNG":{"name":"Paranagua","coordinates":[-48.5,-25.52],"city":"Paranaguá","province":"Paraná","country":"Brazil","alias":["br_par_01", "br_par_001"],"regions":["America", "Latin America"],"timezone":"America/Sao_Paulo","unlocs":["BRPNG"],"code":"35159"}`),
-				output: []domain.Port{portParanagua},
+				output: []ports.Port{portParanagua},
 				errStr: "EOF",
 			},
 		}
@@ -129,7 +129,7 @@ func TestStopProcessing(t *testing.T) {
 		input := &slowReader{}
 		ctx, cancel := context.WithCancel(context.Background())
 
-		chPorts := make(chan []domain.Port)
+		chPorts := make(chan []ports.Port)
 		chErrs := make(chan error)
 
 		go func() {
@@ -146,11 +146,11 @@ func TestStopProcessing(t *testing.T) {
 
 }
 
-func parseStream(ctx context.Context, jsonStream io.Reader) ([]domain.Port, error) {
+func parseStream(ctx context.Context, jsonStream io.Reader) ([]ports.Port, error) {
 	p := newParser(jsonStream)
 
 	results := p.parse(ctx)
-	ports := []domain.Port{}
+	ports := []ports.Port{}
 	for res := range results {
 		if res.err != nil {
 			return ports, res.err

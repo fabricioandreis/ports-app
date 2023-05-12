@@ -5,7 +5,7 @@ import (
 	"errors"
 	"io"
 
-	"github.com/fabricioandreis/ports-app/internal/domain"
+	"github.com/fabricioandreis/ports-app/internal/domain/ports"
 )
 
 var ErrCastTokenIDString = errors.New("unable to cast token ID to string")
@@ -25,7 +25,7 @@ func newJsonIterator(jsonStream io.Reader) jsonIterator {
 	}
 }
 
-func (it *jsonIterator) next() (*domain.Port, error) {
+func (it *jsonIterator) next() (*ports.Port, error) {
 	if !it.started {
 		_, err := it.dec.Token() // read opening curly bracket
 		if err != nil {
@@ -50,7 +50,7 @@ func (it *jsonIterator) next() (*domain.Port, error) {
 	if !ok {
 		return nil, ErrCastTokenIDString
 	}
-	port := domain.Port{ID: id}
+	port := ports.Port{ID: id}
 
 	// read remaining part of the item and unmarshal it into Port entity
 	err = it.dec.Decode(&port)

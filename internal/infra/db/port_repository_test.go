@@ -6,7 +6,7 @@ import (
 	"testing"
 
 	"github.com/fabricioandreis/ports-app/internal/contracts/repository"
-	"github.com/fabricioandreis/ports-app/internal/domain"
+	"github.com/fabricioandreis/ports-app/internal/domain/ports"
 	"github.com/fabricioandreis/ports-app/internal/infra/db"
 	"github.com/fabricioandreis/ports-app/internal/infra/db/stub"
 	"github.com/google/go-cmp/cmp"
@@ -15,7 +15,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-var portRioGrande = domain.Port{
+var portRioGrande = ports.Port{
 	ID:          "BRRIG",
 	Code:        "35173",
 	Name:        "RioGrande",

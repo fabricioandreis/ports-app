@@ -5,7 +5,7 @@ import (
 	"log"
 
 	"github.com/fabricioandreis/ports-app/internal/contracts/repository"
-	"github.com/fabricioandreis/ports-app/internal/domain"
+	"github.com/fabricioandreis/ports-app/internal/domain/ports"
 	"github.com/fabricioandreis/ports-app/internal/infra/db/proto"
 	protobuf "google.golang.org/protobuf/proto"
 )
@@ -18,7 +18,7 @@ func NewPortRepository(client Client) repository.Port {
 	return &PortRepository{client}
 }
 
-func (repo *PortRepository) Get(ctx context.Context, portID string) (*domain.Port, error) {
+func (repo *PortRepository) Get(ctx context.Context, portID string) (*ports.Port, error) {
 	dbModel, err := repo.client.Get(ctx, portID).Bytes()
 	if err != nil {
 		return nil, err
@@ -31,7 +31,7 @@ func (repo *PortRepository) Get(ctx context.Context, portID string) (*domain.Por
 
 	return port, nil
 }
-func (repo *PortRepository) Put(ctx context.Context, port domain.Port) error {
+func (repo *PortRepository) Put(ctx context.Context, port ports.Port) error {
 	dbModel, err := repo.entityToDBModel(port)
 	if err != nil {
 		return err
@@ -41,7 +41,7 @@ func (repo *PortRepository) Put(ctx context.Context, port domain.Port) error {
 	return nil
 }
 
-func (repo *PortRepository) entityToDBModel(port domain.Port) ([]byte, error) {
+func (repo *PortRepository) entityToDBModel(port ports.Port) ([]byte, error) {
 	message := &proto.Port{
 		ID:          port.ID,
 		Code:        port.Code,
@@ -58,14 +58,14 @@ func (repo *PortRepository) entityToDBModel(port domain.Port) ([]byte, error) {
 	return protobuf.Marshal(message)
 }
 
-func (repo *PortRepository) dbModelToEntity(dbModel []byte) (*domain.Port, error) {
+func (repo *PortRepository) dbModelToEntity(dbModel []byte) (*ports.Port, error) {
 	port := proto.Port{}
 	err := protobuf.Unmarshal(dbModel, &port)
 	if err != nil {
 		return nil, err
 	}
 
-	return &domain.Port{
+	return &ports.Port{
 		ID:          port.ID,
 		Code:        port.Code,
 		Name:        port.Name,
