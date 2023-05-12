@@ -18,18 +18,18 @@ type config struct {
 	errToReturn error
 }
 
-type option func(c *config)
+type Option func(repo *PortRepository)
 
-func WithError(err error) option {
-	return func(c *config) {
-		c.errToReturn = err
+func WithError(err error) Option {
+	return func(repo *PortRepository) {
+		repo.cfg.errToReturn = err
 	}
 }
 
-func NewPortRepository(opts ...option) repository.Port {
+func NewPortRepository(opts ...Option) repository.Port {
 	repo := &PortRepository{db: sync.Map{}}
 	for _, opt := range opts {
-		opt(&repo.cfg)
+		opt(repo)
 	}
 	return repo
 }
@@ -48,8 +48,8 @@ func (repo *PortRepository) Get(ctx context.Context, portID string) (*ports.Port
 		return nil, errors.New("unable to cast result as port")
 	}
 	return &port, nil
-
 }
+
 func (repo *PortRepository) Put(ctx context.Context, port ports.Port) error {
 	if repo.cfg.errToReturn != nil {
 		return repo.cfg.errToReturn
