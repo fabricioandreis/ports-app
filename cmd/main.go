@@ -21,7 +21,12 @@ func main() {
 	defer cancel()
 
 	config := config.Load()
-	redis := db.NewClient(config.RedisAddress, config.RedisPassword)
+	redis, err := db.NewClient(config.RedisAddress, config.RedisPassword)
+	if err != nil {
+		log.Println(err.Error())
+		// cannot proceed without a database and no connections to free
+		os.Exit(1)
+	}
 
 	go gracefullyShutdown(cancel, redis, done)
 
@@ -39,7 +44,7 @@ func run(ctx context.Context, config config.Config, dbClient db.Client, done cha
 	inputFile, err := os.Open(config.InputJSONFilePath)
 	if err != nil {
 		err = errors.Join(errors.New("unable to open file"), err)
-		log.Fatalf(err.Error())
+		log.Println(err.Error())
 		return
 	}
 

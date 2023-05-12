@@ -30,7 +30,9 @@ type port struct {
 func TestAcceptance(t *testing.T) {
 	config := config.Load()
 
-	dbClient := db.NewClient(config.RedisAddress, config.RedisPassword)
+	dbClient, err := db.NewClient(config.RedisAddress, config.RedisPassword)
+	require.NoError(t, err)
+
 	repo := db.NewPortRepository(dbClient)
 
 	expected := expectedPorts(config.InputJSONFilePath)

@@ -39,7 +39,11 @@ func TestPortRepository(t *testing.T) {
 			enabled: true,
 		},
 		{
-			repo:    func() repository.Port { return db.NewPortRepository(db.NewClient("localhost:6379", "")) },
+			repo: func() repository.Port {
+				redisClient, err := db.NewClient("localhost:6379", "")
+				require.NoError(t, err)
+				return db.NewPortRepository(redisClient)
+			},
 			enabled: false,
 		},
 	}

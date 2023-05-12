@@ -18,6 +18,7 @@ clear:
 	rm -f ${BINARY_NAME}
 	rm -rf *coverage*
 	rm -rf *test-results*
+	go clean -testcache
 
 test:
 	go test -cover ./... -skip "TestAcceptance" -race

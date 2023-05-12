@@ -2,17 +2,23 @@ package db
 
 import (
 	"context"
+	"errors"
 	"log"
 	"time"
 
 	redis "github.com/redis/go-redis/v9"
 )
 
+var (
+	ErrCreatingClient     = errors.New("unable to create Redis client")
+	ErrConnectingDatabase = errors.New("unable to create Redis client")
+)
+
 type Client struct {
 	*redis.Client
 }
 
-func NewClient(address, password string) Client {
+func NewClient(address, password string) (Client, error) {
 	redisClient := redis.NewClient(&redis.Options{
 		Addr:         address,
 		Password:     password,
@@ -22,19 +28,21 @@ func NewClient(address, password string) Client {
 		WriteTimeout: 200 * time.Millisecond,
 	})
 	if redisClient == nil {
-		log.Fatalln("error making Redis client at " + address)
+		return Client{}, errors.Join(ErrCreatingClient, errors.New("error creating Redis client at "+address))
 	}
 	if err := redisClient.Ping(context.Background()).Err(); err != nil {
-		log.Fatalln("unable to connect to Redis database at " + address)
+		return Client{}, errors.Join(ErrConnectingDatabase, errors.New("error connecting to Redis database at "+address))
 	}
-	return Client{redisClient}
+	return Client{redisClient}, nil
 }
 
 func (c Client) Close() {
 	log.Println("Closing Redis client")
-	err := c.Client.Close()
-	if err != nil {
-		log.Println("unable to close Redis client: " + err.Error())
+	if c.Client != nil {
+		err := c.Client.Close()
+		if err != nil {
+			log.Println("unable to close Redis client: " + err.Error())
+		}
 	}
 	log.Println("Closed Redis client")
 }
