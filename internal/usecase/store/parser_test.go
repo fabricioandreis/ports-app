@@ -23,7 +23,7 @@ var (
 		Country:     "Brazil",
 		Timezone:    "America/Sao_Paulo",
 		Alias:       []string{"br_par_01", "br_par_001"},
-		Coordinates: []float32{-48.5, -25.52},
+		Coordinates: ports.Coordinates{Lat: -48.5, Long: -25.52},
 		Regions:     []string{"America", "Latin America"},
 		Unlocs:      []string{"BRPNG"},
 	}
@@ -36,9 +36,13 @@ var (
 		Country:     "Brazil",
 		Timezone:    "America/Sao_Paulo",
 		Alias:       []string{},
-		Coordinates: []float32{-56.5481122, -29.1294007},
+		Coordinates: ports.Coordinates{Lat: -56.5481122, Long: -29.1294007},
 		Regions:     []string{},
 		Unlocs:      []string{"BRITQ"},
+	}
+	portNoCoord = ports.Port{
+		ID:          "PORTID",
+		Coordinates: ports.Coordinates{},
 	}
 )
 
@@ -52,6 +56,10 @@ func TestParser(t *testing.T) {
 				input: strings.NewReader(
 					`{"BRPNG":{"name":"Paranagua","coordinates":[-48.5,-25.52],"city":"Paranaguá","province":"Paraná","country":"Brazil","alias":["br_par_01", "br_par_001"],"regions":["America", "Latin America"],"timezone":"America/Sao_Paulo","unlocs":["BRPNG"],"code":"35159"}, "BRITQ":{"name":"Itaqui","city":"Itaqui","province":"RioGrandedoSul","country":"Brazil","alias":[],"regions":[],"coordinates":[-56.5481122,-29.1294007],"timezone":"America/Sao_Paulo","unlocs":["BRITQ"],"code":"35135"}}`),
 				output: []ports.Port{portParanagua, portItaqui},
+			},
+			{
+				input:  strings.NewReader(`{"PORTID":{"coordinates":[]}}`),
+				output: []ports.Port{portNoCoord},
 			},
 			{
 				input:  strings.NewReader(`{}`),
@@ -107,6 +115,12 @@ func TestParser(t *testing.T) {
 					`{"BRPNG":{"name":"Paranagua","coordinates":[-48.5,-25.52],"city":"Paranaguá","province":"Paraná","country":"Brazil","alias":["br_par_01", "br_par_001"],"regions":["America", "Latin America"],"timezone":"America/Sao_Paulo","unlocs":["BRPNG"],"code":"35159"}`),
 				output: []ports.Port{portParanagua},
 				errStr: "EOF",
+			},
+			{
+				input: strings.NewReader(
+					`{"BRPNG":{"name":"Paranagua","coordinates":[-48.5],"city":"Paranaguá","province":"Paraná","country":"Brazil","alias":["br_par_01", "br_par_001"],"regions":["America", "Latin America"],"timezone":"America/Sao_Paulo","unlocs":["BRPNG"],"code":"35159"}}`),
+				output: []ports.Port{},
+				errStr: ErrInvalidCoordinates.Error(),
 			},
 		}
 

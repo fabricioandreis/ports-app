@@ -8,7 +8,10 @@ import (
 	"github.com/fabricioandreis/ports-app/internal/domain/ports"
 )
 
-var ErrCastTokenIDString = errors.New("unable to cast token ID to string")
+var (
+	ErrCastTokenIDString  = errors.New("unable to cast token ID to string")
+	ErrInvalidCoordinates = errors.New("invalid coordinates in port")
+)
 
 // A jsonIterator returns the next port in the input JSON stream.
 // When it finished reading, it returns nil.
@@ -16,6 +19,20 @@ var ErrCastTokenIDString = errors.New("unable to cast token ID to string")
 type jsonIterator struct {
 	started bool
 	dec     *json.Decoder
+}
+
+type jsonPort struct {
+	ID          string
+	Code        string
+	Name        string
+	City        string
+	Province    string
+	Country     string
+	Timezone    string
+	Alias       []string
+	Coordinates []float32
+	Regions     []string
+	Unlocs      []string
 }
 
 func newJsonIterator(jsonStream io.Reader) jsonIterator {
@@ -41,22 +58,47 @@ func (it *jsonIterator) next() (*ports.Port, error) {
 		return nil, nil
 	}
 
+	return it.decode()
+}
+
+func (it *jsonIterator) decode() (*ports.Port, error) {
 	// port ID is a different token on each item, therefore we just read it as a string token
 	tokenID, err := it.dec.Token()
 	if err != nil {
 		return nil, err
 	}
-	id, ok := tokenID.(string)
+	portID, ok := tokenID.(string)
 	if !ok {
 		return nil, ErrCastTokenIDString
 	}
-	port := ports.Port{ID: id}
 
 	// read remaining part of the item and unmarshal it into Port entity
-	err = it.dec.Decode(&port)
+	jp := jsonPort{}
+	err = it.dec.Decode(&jp)
 	if err != nil {
 		return nil, err
 	}
+	port := ports.Port{
+		ID:       portID,
+		Code:     jp.Code,
+		Name:     jp.Name,
+		City:     jp.City,
+		Province: jp.Province,
+		Country:  jp.Country,
+		Timezone: jp.Timezone,
+		Alias:    jp.Alias,
+		Regions:  jp.Regions,
+		Unlocs:   jp.Unlocs,
+	}
+
+	// converts slice of coordinates into proper domain object
+	if len(jp.Coordinates) == 0 {
+		return &port, nil
+	}
+	if len(jp.Coordinates) != 2 {
+		return nil, errors.Join(ErrInvalidCoordinates, errors.New("port "+portID+" has invalid coordinates"))
+	}
+	port.Coordinates = ports.Coordinates{Lat: jp.Coordinates[0], Long: jp.Coordinates[1]}
 
 	return &port, nil
 }
