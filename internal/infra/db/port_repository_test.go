@@ -24,7 +24,7 @@ var portRioGrande = ports.Port{
 	Country:     "Brazil",
 	Timezone:    "America/Sao_Paulo",
 	Alias:       []string{},
-	Coordinates: ports.Coordinates{Lat: -52.1075802, Long: -32.0353776},
+	Coordinates: []float32{-52.1075802, -32.0353776},
 	Regions:     []string{},
 	Unlocs:      []string{"BRRIG"},
 }

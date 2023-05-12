@@ -43,20 +43,17 @@ func (repo *PortRepository) Put(ctx context.Context, port ports.Port) error {
 
 func (repo *PortRepository) entityToDBModel(port ports.Port) ([]byte, error) {
 	message := &proto.Port{
-		ID:       port.ID,
-		Code:     port.Code,
-		Name:     port.Name,
-		City:     port.City,
-		Province: port.Province,
-		Country:  port.Country,
-		Timezone: port.Timezone,
-		Alias:    port.Alias,
-		Coordinates: &proto.Coordinates{
-			Latitude:  port.Coordinates.Lat,
-			Longitude: port.Coordinates.Long,
-		},
-		Regions: port.Regions,
-		Unlocs:  port.Unlocs,
+		ID:          port.ID,
+		Code:        port.Code,
+		Name:        port.Name,
+		City:        port.City,
+		Province:    port.Province,
+		Country:     port.Country,
+		Timezone:    port.Timezone,
+		Alias:       port.Alias,
+		Coordinates: port.Coordinates,
+		Regions:     port.Regions,
+		Unlocs:      port.Unlocs,
 	}
 	return protobuf.Marshal(message)
 }
@@ -69,19 +66,16 @@ func (repo *PortRepository) dbModelToEntity(dbModel []byte) (*ports.Port, error)
 	}
 
 	return &ports.Port{
-		ID:       port.ID,
-		Code:     port.Code,
-		Name:     port.Name,
-		City:     port.City,
-		Province: port.Province,
-		Country:  port.Country,
-		Timezone: port.Timezone,
-		Alias:    port.Alias,
-		Coordinates: ports.Coordinates{
-			Lat:  port.Coordinates.Latitude,
-			Long: port.Coordinates.Longitude,
-		},
-		Regions: port.Regions,
-		Unlocs:  port.Unlocs,
+		ID:          port.ID,
+		Code:        port.Code,
+		Name:        port.Name,
+		City:        port.City,
+		Province:    port.Province,
+		Country:     port.Country,
+		Timezone:    port.Timezone,
+		Alias:       port.Alias,
+		Coordinates: port.Coordinates,
+		Regions:     port.Regions,
+		Unlocs:      port.Unlocs,
 	}, nil
 }
