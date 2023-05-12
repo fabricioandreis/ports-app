@@ -48,6 +48,7 @@ var (
 
 func TestParser(t *testing.T) {
 	t.Run("Should be able to parse a simple JSON input stream containing ports in a known format", func(t *testing.T) {
+		t.Parallel()
 		tests := []struct {
 			input  io.Reader
 			output []ports.Port
@@ -67,8 +68,10 @@ func TestParser(t *testing.T) {
 			},
 		}
 
-		for i, data := range tests {
-			t.Run(fmt.Sprintf("Test #%v", i+1), func(t *testing.T) {
+		for _, data := range tests {
+			data := data
+			t.Run("", func(t *testing.T) {
+				t.Parallel()
 
 				res, err := parseStream(context.Background(), data.input)
 
@@ -82,6 +85,7 @@ func TestParser(t *testing.T) {
 	})
 
 	t.Run("Should return error when input in an invalid JSON stream but also partially process the stream up until the syntax error", func(t *testing.T) {
+		t.Parallel()
 		tests := []struct {
 			input  io.Reader
 			output []ports.Port
@@ -124,8 +128,10 @@ func TestParser(t *testing.T) {
 			},
 		}
 
-		for i, data := range tests {
-			t.Run(fmt.Sprintf("Test #%v", i+1), func(t *testing.T) {
+		for _, data := range tests {
+			data := data
+			t.Run("", func(t *testing.T) {
+				t.Parallel()
 				res, err := parseStream(context.Background(), data.input)
 
 				assert.Len(t, res, len(data.output))
@@ -140,6 +146,7 @@ func TestParser(t *testing.T) {
 
 func TestStopProcessing(t *testing.T) {
 	t.Run("Should gracefully stop processing when context is cancelled", func(t *testing.T) {
+		t.Parallel()
 		input := &slowReader{}
 		ctx, cancel := context.WithCancel(context.Background())
 

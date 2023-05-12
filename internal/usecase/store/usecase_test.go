@@ -33,6 +33,8 @@ var (
 
 func TestStoreUsecase(t *testing.T) {
 	t.Run("Should be able to store Ports from input JSON stream into the database", func(t *testing.T) {
+		t.Parallel()
+
 		repoPort := stub.NewPortRepository()
 		jsonStream := strings.NewReader(`{"BRRIG":{"name":"RioGrande","city":"RioGrande","province":"RioGrandedoSul","country":"Brazil","alias":[],"regions":[],"coordinates":[-52.1075802,-32.0353776],"timezone":"America/Sao_Paulo","unlocs":["BRRIG"],"code":"35173"}}`)
 		ctx := context.Background()
@@ -52,6 +54,8 @@ func TestStoreUsecase(t *testing.T) {
 	})
 
 	t.Run("Should handle error from repository", func(t *testing.T) {
+		t.Parallel()
+
 		expectedErr := errors.New("unable to store port into repository")
 		repoPort := stub.NewPortRepository(stub.WithError(expectedErr))
 		jsonStream := strings.NewReader(`{"BRRIG":{"name":"RioGrande","city":"RioGrande","province":"RioGrandedoSul","country":"Brazil","alias":[],"regions":[],"coordinates":[-52.1075802,-32.0353776],"timezone":"America/Sao_Paulo","unlocs":["BRRIG"],"code":"35173"}}`)
