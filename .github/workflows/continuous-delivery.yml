@@ -22,8 +22,11 @@ jobs:
       with:
         go-version: '1.20'
 
-    - name: Static analysis
+    - name: Static analysis with Vet
       run: make vet
+
+    - name: Static analysis with golangci-lint
+      uses: golangci/golangci-lint-action@v3
 
     - name: Build
       run: make build
