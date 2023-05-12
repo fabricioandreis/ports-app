@@ -4,9 +4,12 @@ import (
 	"encoding/json"
 	"errors"
 	"io"
+	"log"
 
 	"github.com/fabricioandreis/ports-app/internal/domain/ports"
 )
+
+const numCoordinates = 2
 
 var (
 	ErrCastTokenIDString  = errors.New("unable to cast token ID to string")
@@ -22,20 +25,20 @@ type jsonIterator struct {
 }
 
 type jsonPort struct {
-	ID          string
-	Code        string
-	Name        string
-	City        string
-	Province    string
-	Country     string
-	Timezone    string
-	Alias       []string
-	Coordinates []float32
-	Regions     []string
-	Unlocs      []string
+	ID          string    `json:"id"`
+	Code        string    `json:"code"`
+	Name        string    `json:"name"`
+	City        string    `json:"city"`
+	Province    string    `json:"province"`
+	Country     string    `json:"country"`
+	Timezone    string    `json:"timezone"`
+	Alias       []string  `json:"alias"`
+	Coordinates []float32 `json:"coordinates"`
+	Regions     []string  `json:"regions"`
+	Unlocs      []string  `json:"unlocs"`
 }
 
-func newJsonIterator(jsonStream io.Reader) jsonIterator {
+func newJSONIterator(jsonStream io.Reader) jsonIterator {
 	return jsonIterator{
 		started: false,
 		dec:     json.NewDecoder(jsonStream),
@@ -48,13 +51,16 @@ func (it *jsonIterator) next() (*ports.Port, error) {
 		if err != nil {
 			return nil, err
 		}
+
 		it.started = true
 	}
+
 	if !it.dec.More() {
 		_, err := it.dec.Token() // read closing curly bracket
 		if err != nil {
 			return nil, err
 		}
+
 		return nil, nil
 	}
 
@@ -67,38 +73,45 @@ func (it *jsonIterator) decode() (*ports.Port, error) {
 	if err != nil {
 		return nil, err
 	}
+
 	portID, ok := tokenID.(string)
 	if !ok {
 		return nil, ErrCastTokenIDString
 	}
 
 	// read remaining part of the item and unmarshal it into Port entity
-	jp := jsonPort{}
-	err = it.dec.Decode(&jp)
+	readPort := jsonPort{}
+
+	err = it.dec.Decode(&readPort)
 	if err != nil {
 		return nil, err
 	}
+
 	port := ports.Port{
 		ID:       portID,
-		Code:     jp.Code,
-		Name:     jp.Name,
-		City:     jp.City,
-		Province: jp.Province,
-		Country:  jp.Country,
-		Timezone: jp.Timezone,
-		Alias:    jp.Alias,
-		Regions:  jp.Regions,
-		Unlocs:   jp.Unlocs,
+		Code:     readPort.Code,
+		Name:     readPort.Name,
+		City:     readPort.City,
+		Province: readPort.Province,
+		Country:  readPort.Country,
+		Timezone: readPort.Timezone,
+		Alias:    readPort.Alias,
+		Regions:  readPort.Regions,
+		Unlocs:   readPort.Unlocs,
 	}
 
 	// converts slice of coordinates into proper domain object
-	if len(jp.Coordinates) == 0 {
+	if len(readPort.Coordinates) == 0 {
 		return &port, nil
 	}
-	if len(jp.Coordinates) != 2 {
-		return nil, errors.Join(ErrInvalidCoordinates, errors.New("port "+portID+" has invalid coordinates"))
+
+	if len(readPort.Coordinates) != numCoordinates {
+		log.Println("port " + portID + " has invalid coordinates")
+
+		return nil, ErrInvalidCoordinates
 	}
-	port.Coordinates = ports.Coordinates{Lat: jp.Coordinates[0], Long: jp.Coordinates[1]}
+
+	port.Coordinates = ports.Coordinates{Lat: readPort.Coordinates[0], Long: readPort.Coordinates[1]}
 
 	return &port, nil
 }

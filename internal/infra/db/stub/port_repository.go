@@ -5,9 +5,10 @@ import (
 	"errors"
 	"sync"
 
-	"github.com/fabricioandreis/ports-app/internal/contracts/repository"
 	"github.com/fabricioandreis/ports-app/internal/domain/ports"
 )
+
+var ErrCastResult = errors.New("unable to cast result as port")
 
 type PortRepository struct {
 	db  sync.Map
@@ -26,35 +27,39 @@ func WithError(err error) Option {
 	}
 }
 
-func NewPortRepository(opts ...Option) repository.Port {
+func NewPortRepository(opts ...Option) *PortRepository {
 	repo := &PortRepository{db: sync.Map{}}
 	for _, opt := range opts {
 		opt(repo)
 	}
+
 	return repo
 }
 
-func (repo *PortRepository) Get(ctx context.Context, portID string) (*ports.Port, error) {
+func (repo *PortRepository) Get(_ context.Context, portID string) (*ports.Port, error) {
 	if repo.cfg.errToReturn != nil {
 		return nil, repo.cfg.errToReturn
 	}
 
-	res, ok := repo.db.Load(portID)
-	if !ok {
+	res, found := repo.db.Load(portID)
+	if !found {
 		return nil, nil
 	}
-	port, ok := res.(ports.Port)
-	if !ok {
-		return nil, errors.New("unable to cast result as port")
+
+	port, found := res.(ports.Port)
+	if !found {
+		return nil, ErrCastResult
 	}
+
 	return &port, nil
 }
 
-func (repo *PortRepository) Put(ctx context.Context, port ports.Port) error {
+func (repo *PortRepository) Put(_ context.Context, port ports.Port) error {
 	if repo.cfg.errToReturn != nil {
 		return repo.cfg.errToReturn
 	}
 
 	repo.db.Store(port.ID, port)
+
 	return nil
 }

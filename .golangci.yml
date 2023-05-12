@@ -1,0 +1,16 @@
+issues:
+  exclude-rules:
+    - path: .go
+      linters:
+        - wrapcheck
+        - exhaustruct
+        - exhaustivestruct
+        - nilnil
+    - path: _test.go
+      linters:
+        - funlen
+        - lll
+        - varnamelen
+        - testpackage
+        - goerr113
+        - gochecknoglobals

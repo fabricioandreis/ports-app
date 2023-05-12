@@ -9,6 +9,8 @@ import (
 	redis "github.com/redis/go-redis/v9"
 )
 
+const redisTimeout = 200 * time.Millisecond
+
 var (
 	ErrCreatingClient     = errors.New("unable to create Redis client")
 	ErrConnectingDatabase = errors.New("unable to create Redis client")
@@ -23,27 +25,35 @@ func NewClient(address, password string) (Client, error) {
 		Addr:         address,
 		Password:     password,
 		DB:           0,
-		DialTimeout:  200 * time.Millisecond,
-		ReadTimeout:  200 * time.Millisecond,
-		WriteTimeout: 200 * time.Millisecond,
+		DialTimeout:  redisTimeout,
+		ReadTimeout:  redisTimeout,
+		WriteTimeout: redisTimeout,
 	})
 	if redisClient == nil {
-		return Client{}, errors.Join(ErrCreatingClient, errors.New("error creating Redis client at "+address))
+		log.Println("error creating Redis client at " + address)
+
+		return Client{}, ErrCreatingClient
 	}
+
 	err := redisClient.Ping(context.Background()).Err()
 	if err != nil {
-		return Client{}, errors.Join(ErrConnectingDatabase, errors.New("error connecting to Redis database at "+address))
+		log.Println("error connecting to Redis database at " + address)
+
+		return Client{}, ErrConnectingDatabase
 	}
+
 	return Client{redisClient}, nil
 }
 
 func (c Client) Close() {
 	log.Println("Closing Redis client")
+
 	if c.Client != nil {
 		err := c.Client.Close()
 		if err != nil {
 			log.Println("unable to close Redis client: " + err.Error())
 		}
 	}
+
 	log.Println("Closed Redis client")
 }

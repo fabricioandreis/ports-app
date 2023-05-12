@@ -13,21 +13,22 @@ import (
 	"github.com/fabricioandreis/ports-app/internal/usecase/store"
 )
 
+var ErrUnableOpenFile = errors.New("unable to open file")
+
 func main() {
 	log.Println("Running Ports service")
+
 	done := make(chan bool)
-
-	ctx, cancel := context.WithCancel(context.Background())
-	defer cancel()
-
 	config := config.Load()
+
 	redis, err := db.NewClient(config.RedisAddress, config.RedisPassword)
 	if err != nil {
 		log.Println(err.Error())
-		cancel()
-		// cannot proceed without a database and no connections to free
-		os.Exit(1)
+		os.Exit(1) // cannot proceed without a database
 	}
+
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
 
 	go gracefullyShutdown(cancel, redis, done)
 
@@ -44,8 +45,9 @@ func run(ctx context.Context, config config.Config, dbClient db.Client, done cha
 
 	inputFile, err := os.Open(config.InputJSONFilePath)
 	if err != nil {
-		err = errors.Join(errors.New("unable to open file"), err)
+		err = errors.Join(ErrUnableOpenFile, err)
 		log.Println(err.Error())
+
 		return
 	}
 
@@ -53,6 +55,7 @@ func run(ctx context.Context, config config.Config, dbClient db.Client, done cha
 	storeUsecase := store.NewUseCase(repoPort)
 	count, err := storeUsecase.Store(ctx, inputFile)
 	log.Printf("Finished store use case after storing %v ports\n", count)
+
 	if err != nil {
 		log.Printf("Did not process all items in the input JSON file due to error: %s\n", err.Error())
 	}

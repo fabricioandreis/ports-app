@@ -6,6 +6,9 @@ run:
 dep:
 	go get .
 
+fmt:
+	go fmt ./...
+
 vet:
 	go vet ./...
 

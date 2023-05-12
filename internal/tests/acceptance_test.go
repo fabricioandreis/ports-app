@@ -1,4 +1,4 @@
-package tests
+package tests_test
 
 import (
 	"context"
@@ -28,6 +28,8 @@ type port struct {
 }
 
 func TestAcceptance(t *testing.T) {
+	t.Parallel()
+
 	config := config.Load()
 
 	dbClient, err := db.NewClient(config.RedisAddress, config.RedisPassword)
@@ -37,28 +39,29 @@ func TestAcceptance(t *testing.T) {
 
 	expected := expectedPorts(config.InputJSONFilePath)
 
-	for _, e := range expected {
-		t.Logf("Finding port %s in database", e.ID)
-		found, err := repo.Get(context.Background(), e.ID)
+	for _, expect := range expected {
+		t.Logf("Finding port %s in database", expect.ID)
+		found, err := repo.Get(context.Background(), expect.ID)
 
 		assert.NoError(t, err)
 		require.NotNil(t, found)
-		assert.Equal(t, e.ID, found.ID)
-		assert.Equal(t, e.Code, found.Code)
-		assert.Equal(t, e.Name, found.Name)
-		assert.Equal(t, e.City, found.City)
-		assert.Equal(t, e.Province, found.Province)
-		assert.Equal(t, e.Country, found.Country)
-		assert.Equal(t, e.Timezone, found.Timezone)
-		assert.ElementsMatch(t, e.Alias, found.Alias)
-		assert.ElementsMatch(t, e.Regions, found.Regions)
-		assert.ElementsMatch(t, e.Unlocs, found.Unlocs)
-		if len(e.Coordinates) == 2 {
-			assert.Equal(t, e.Coordinates[0], found.Coordinates.Lat)
-			assert.Equal(t, e.Coordinates[01], found.Coordinates.Long)
+		assert.Equal(t, expect.ID, found.ID)
+		assert.Equal(t, expect.Code, found.Code)
+		assert.Equal(t, expect.Name, found.Name)
+		assert.Equal(t, expect.City, found.City)
+		assert.Equal(t, expect.Province, found.Province)
+		assert.Equal(t, expect.Country, found.Country)
+		assert.Equal(t, expect.Timezone, found.Timezone)
+		assert.ElementsMatch(t, expect.Alias, found.Alias)
+		assert.ElementsMatch(t, expect.Regions, found.Regions)
+		assert.ElementsMatch(t, expect.Unlocs, found.Unlocs)
+
+		if len(expect.Coordinates) == 2 {
+			assert.Equal(t, expect.Coordinates[0], found.Coordinates.Lat)
+			assert.Equal(t, expect.Coordinates[1], found.Coordinates.Long)
 		}
 
-		t.Logf("Found port %s in database and all its fields match the expected values", e.ID)
+		t.Logf("Found port %s in database and all its fields match the expected values", expect.ID)
 	}
 }
 
@@ -69,6 +72,7 @@ func expectedPorts(filepath string) []port {
 	}
 
 	expected := []port{}
+
 	err = json.Unmarshal(content, &expected)
 	if err != nil {
 		log.Fatalf("unable to unmarshal file '%s': %s", filepath, err.Error())

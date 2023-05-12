@@ -31,6 +31,7 @@ var portRioGrande = ports.Port{
 
 func TestPortRepository(t *testing.T) {
 	t.Parallel()
+
 	repos := []struct {
 		repo    func() repository.Port
 		enabled bool
@@ -43,6 +44,7 @@ func TestPortRepository(t *testing.T) {
 			repo: func() repository.Port {
 				redisClient, err := db.NewClient("localhost:6379", "")
 				require.NoError(t, err)
+
 				return db.NewPortRepository(redisClient)
 			},
 			enabled: true,
@@ -55,6 +57,7 @@ func TestPortRepository(t *testing.T) {
 		}
 
 		repo := data.repo()
+
 		t.Run(fmt.Sprintf("Repo %v: Should be able to store port and retrieve it", i+1), func(t *testing.T) {
 			t.Parallel()
 			err1 := repo.Put(context.Background(), portRioGrande)

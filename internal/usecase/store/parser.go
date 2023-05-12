@@ -9,6 +9,10 @@ import (
 	"github.com/fabricioandreis/ports-app/internal/domain/ports"
 )
 
+const channelBufferLength = 100
+
+var ErrParsingInputJSONStream = errors.New("error when parsing input JSON stream")
+
 // A parser parses an input JSON stream of a known file format for Ports.
 type parser struct {
 	jsonStream io.Reader
@@ -27,7 +31,8 @@ type result struct {
 // If an error occurs when trying to unmarshal the JSON stream, an error is set to the result into the output channel.
 // The method handles context cancellation by writing an error right away into the output channel.
 func (p *parser) parse(ctx context.Context) <-chan result {
-	results := make(chan result, 100)
+	results := make(chan result, channelBufferLength)
+
 	go func() {
 		defer func() {
 			log.Println("Closing parser channel...")
@@ -35,7 +40,8 @@ func (p *parser) parse(ctx context.Context) <-chan result {
 			log.Println("Closed parser channel")
 		}()
 
-		iterator := newJsonIterator(p.jsonStream)
+		iterator := newJSONIterator(p.jsonStream)
+
 		for {
 			port, err := iterator.next()
 
@@ -43,16 +49,21 @@ func (p *parser) parse(ctx context.Context) <-chan result {
 			case <-ctx.Done():
 				p.handleError(ctx.Err(), results)
 				log.Println("Context cancelled, finishing parser...")
+
 				return
 			default:
 				if err != nil {
 					p.handleError(err, results)
+
 					return
 				}
+
 				if port == nil {
 					log.Println("Parsed input JSON stream")
+
 					return
 				}
+
 				log.Println("Read port " + port.ID)
 				results <- result{port: *port}
 			}
@@ -63,7 +74,7 @@ func (p *parser) parse(ctx context.Context) <-chan result {
 }
 
 func (p *parser) handleError(err error, results chan<- result) {
-	err = errors.Join(errors.New("error when parsing input JSON stream"), err)
+	err = errors.Join(ErrParsingInputJSONStream, err)
 	log.Println(err.Error())
 	results <- result{err: err}
 }

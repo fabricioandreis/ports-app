@@ -47,6 +47,7 @@ var (
 )
 
 func TestParser(t *testing.T) {
+	t.Parallel()
 	t.Run("Should be able to parse a simple JSON input stream containing ports in a known format", func(t *testing.T) {
 		t.Parallel()
 		tests := []struct {
@@ -145,6 +146,7 @@ func TestParser(t *testing.T) {
 }
 
 func TestStopProcessing(t *testing.T) {
+	t.Parallel()
 	t.Run("Should gracefully stop processing when context is cancelled", func(t *testing.T) {
 		t.Parallel()
 		input := &slowReader{}
@@ -164,7 +166,6 @@ func TestStopProcessing(t *testing.T) {
 		assert.Len(t, <-chPorts, 0)
 		assert.ErrorIs(t, <-chErrs, context.Canceled)
 	})
-
 }
 
 func parseStream(ctx context.Context, jsonStream io.Reader) ([]ports.Port, error) {
@@ -172,18 +173,22 @@ func parseStream(ctx context.Context, jsonStream io.Reader) ([]ports.Port, error
 
 	results := p.parse(ctx)
 	ports := []ports.Port{}
+
 	for res := range results {
 		if res.err != nil {
 			return ports, res.err
 		}
+
 		ports = append(ports, res.port)
 	}
+
 	return ports, nil
 }
 
 type slowReader struct{}
 
-func (r *slowReader) Read(p []byte) (n int, err error) {
+func (r *slowReader) Read([]byte) (int, error) {
 	time.Sleep(time.Second)
+
 	return 0, io.EOF
 }
