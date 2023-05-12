@@ -37,7 +37,7 @@ func TestStoreUsecase(t *testing.T) {
 		jsonStream := strings.NewReader(`{"BRRIG":{"name":"RioGrande","city":"RioGrande","province":"RioGrandedoSul","country":"Brazil","alias":[],"regions":[],"coordinates":[-52.1075802,-32.0353776],"timezone":"America/Sao_Paulo","unlocs":["BRRIG"],"code":"35173"}}`)
 		ctx := context.Background()
 
-		usecase := store.NewStoreUsecase(repoPort)
+		usecase := store.NewUseCase(repoPort)
 		output, err1 := usecase.Store(ctx, jsonStream)
 		found, err2 := repoPort.Get(ctx, "BRRIG")
 
@@ -57,7 +57,7 @@ func TestStoreUsecase(t *testing.T) {
 		jsonStream := strings.NewReader(`{"BRRIG":{"name":"RioGrande","city":"RioGrande","province":"RioGrandedoSul","country":"Brazil","alias":[],"regions":[],"coordinates":[-52.1075802,-32.0353776],"timezone":"America/Sao_Paulo","unlocs":["BRRIG"],"code":"35173"}}`)
 		ctx := context.Background()
 
-		usecase := store.NewStoreUsecase(repoPort)
+		usecase := store.NewUseCase(repoPort)
 		output, err := usecase.Store(ctx, jsonStream)
 
 		assert.Error(t, err)

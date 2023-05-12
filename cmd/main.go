@@ -44,7 +44,7 @@ func run(ctx context.Context, config config.Config, dbClient db.Client, done cha
 	}
 
 	repoPort := db.NewPortRepository(dbClient)
-	storeUsecase := store.NewStoreUsecase(repoPort)
+	storeUsecase := store.NewUseCase(repoPort)
 	count, err := storeUsecase.Store(ctx, inputFile)
 	log.Printf("Finished store use case after storing %v ports\n", count)
 	if err != nil {

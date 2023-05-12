@@ -8,16 +8,16 @@ import (
 	"github.com/fabricioandreis/ports-app/internal/contracts/repository"
 )
 
-type StoreUsecase struct {
+type UseCase struct {
 	repoPort repository.Port
 }
 
-func NewStoreUsecase(repoPort repository.Port) *StoreUsecase {
-	return &StoreUsecase{repoPort}
+func NewUseCase(repoPort repository.Port) *UseCase {
+	return &UseCase{repoPort}
 }
 
 // Store reads an input JSON stream, convert its contents do Port entities and saves them into the repository
-func (usc *StoreUsecase) Store(ctx context.Context, jsonStream io.Reader) (int, error) {
+func (usc *UseCase) Store(ctx context.Context, jsonStream io.Reader) (int, error) {
 	log.Println("Storing data from input JSON stream into database")
 
 	parser := newParser(jsonStream)
